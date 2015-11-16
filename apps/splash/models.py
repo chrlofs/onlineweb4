@@ -37,5 +37,3 @@ class SplashEvent(TimeStampedModel, models.Model):
     class Meta(object):
         ordering = ('start_time',)
 
-reversion.register(SplashYear)
-reversion.register(SplashEvent)

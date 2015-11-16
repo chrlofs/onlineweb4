@@ -17,8 +17,6 @@ from apps.authentication.models import FIELD_OF_STUDY_CHOICES
 from apps.companyprofile.models import Company
 from apps.marks.models import Mark, get_expiration_date, Suspension
 
-import reversion
-import watson
 from filebrowser.fields import FileBrowseField
 
 
@@ -150,8 +148,6 @@ class Event(models.Model):
         )
 
 
-reversion.register(Event)
-
 """
  BEGIN ACCESS RESTRICTION --------------------------------------------------------------------------
 """
@@ -180,9 +176,6 @@ class Rule(models.Model):
         permissions = (
             ('view_rule', 'View Rule'),
         )
-
-
-reversion.register(Rule)
 
 
 class FieldOfStudyRule(Rule):
@@ -217,9 +210,6 @@ class FieldOfStudyRule(Rule):
         )
 
 
-reversion.register(FieldOfStudyRule)
-
-
 class GradeRule(Rule):
     grade = models.SmallIntegerField(_(u'klassetrinn'), null=False)
 
@@ -252,9 +242,6 @@ class GradeRule(Rule):
         )
 
 
-reversion.register(GradeRule)
-
-
 class UserGroupRule(Rule):
     group = models.ForeignKey(Group, blank=False, null=False)
 
@@ -283,9 +270,6 @@ class UserGroupRule(Rule):
         permissions = (
             ('view_usergrouprule', 'View UserGroupRule'),
         )
-
-
-reversion.register(UserGroupRule)
 
 
 class RuleBundle(models.Model):
@@ -334,9 +318,6 @@ class RuleBundle(models.Model):
         )
 
 
-reversion.register(RuleBundle)
-
-
 """
  END ACCESS RESTRICTION --------------------------------------------------------------------------
 """
@@ -357,8 +338,6 @@ class Extras(models.Model):
         verbose_name = _("ekstra valg")
         verbose_name_plural = _("ekstra valg")
         ordering = ['choice']
-
-reversion.register(Extras)
 
 
 class AttendanceEvent(models.Model):
@@ -691,9 +670,6 @@ class AttendanceEvent(models.Model):
         )
 
 
-reversion.register(AttendanceEvent)
-
-
 class CompanyEvent(models.Model):
     """
     Company relation to AttendanceEvent
@@ -707,9 +683,6 @@ class CompanyEvent(models.Model):
         permissions = (
             ('view_companyevent', 'View CompanyEvent'),
         )
-
-
-reversion.register(CompanyEvent)
 
 
 class Attendee(models.Model):
@@ -747,9 +720,6 @@ class Attendee(models.Model):
         )
 
 
-reversion.register(Attendee)
-
-
 class Reservation(models.Model):
     attendance_event = models.OneToOneField(AttendanceEvent, related_name="reserved_seats")
     seats = models.PositiveIntegerField(u"reserverte plasser", blank=False, null=False)
@@ -767,9 +737,6 @@ class Reservation(models.Model):
         permissions = (
             ('view_reservation', 'View Reservation'),
         )
-
-
-reversion.register(Reservation)
 
 
 class Reservee(models.Model):
@@ -795,9 +762,6 @@ class Reservee(models.Model):
         )
 
 
-reversion.register(Reservee)
-
-
 class GroupRestriction(models.Model):
     event = models.OneToOneField(
         Event,
@@ -812,7 +776,3 @@ class GroupRestriction(models.Model):
         permissions = (
             ('view_restriction', 'View Restriction'),
         )
-
-
-# Registrations for watson indexing
-watson.register(Event)
