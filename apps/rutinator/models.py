@@ -16,7 +16,7 @@ class Task(models.Model):
     task_type = models.IntegerField(choices=(
         (1, 'En gang'),
         (2, 'Gjentagende'),
-    ))
+    ), blank=True, null=True)
 
 
 def __unicode__(self):
