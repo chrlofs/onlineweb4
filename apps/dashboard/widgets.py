@@ -5,12 +5,13 @@
 from django.forms.widgets import TextInput
 from django.forms.utils import force_text, format_html
 
+
 DATEPICKER_WIDGET_STRING = """
 <div class="input-group dp">\r\n
 <span class="input-group-btn datepickerbutton">\r\n
 <a href="#" class="btn btn-primary">\r\n
 <i class="fa fa-calendar fa-lg"></i></a></span>\r\n
-<input class="form-control" id="{}" name="{}" type="text" {} placeholder="Den skal vises fra ..." />\r\n
+<input class="form-control" id="{}" name="{}" type="text" {} placeholder="{}" />\r\n
 </div>\r\n
 """
 DATETIMEPICKER_WIDGET_STRING = """
@@ -18,7 +19,7 @@ DATETIMEPICKER_WIDGET_STRING = """
 <span class="input-group-btn datepickerbutton">\r\n
 <a href="#" class="btn btn-primary">\r\n
 <i class="fa fa-calendar fa-lg"></i></a></span>\r\n
-<input class="form-control" id="{}" name="{}" type="text" {} placeholder="Den skal vises fra ..." />\r\n
+<input class="form-control" id="{}" name="{}" type="text" {} placeholder="{}" />\r\n
 </div>\r\n
 """
 
@@ -27,7 +28,7 @@ TIMEPICKER_WIDGET_STRING = """
 <span class="input-group-btn datepickerbutton">\r\n
 <a href="#" class="btn btn-primary">\r\n
 <i class="fa fa-calendar fa-lg"></i></a></span>\r\n
-<input class="form-control" id="{}" name="{}" type="text" {} placeholder="Den skal vises fra ..." />\r\n
+<input class="form-control" id="{}" name="{}" type="text" {} placeholder="{}" />\r\n
 </div>\r\n
 """
 
@@ -110,7 +111,8 @@ class DatePickerInput(TextInput):
             DATEPICKER_WIDGET_STRING,
             force_text(final_attrs['id']),
             force_text(final_attrs['name']),
-            final_attrs['value']
+            final_attrs['value'],
+            force_text(final_attrs.get('placeholder', 'Velg ...')),
         )
 
 
@@ -145,7 +147,8 @@ class DatetimePickerInput(TextInput):
             DATETIMEPICKER_WIDGET_STRING,
             force_text(final_attrs['id']),
             force_text(final_attrs['name']),
-            final_attrs['value']
+            final_attrs['value'],
+            force_text(final_attrs.get('placeholder', 'Velg ...')),
         )
 
 
@@ -180,5 +183,6 @@ class TimePickerInput(TextInput):
             TIMEPICKER_WIDGET_STRING,
             force_text(final_attrs['id']),
             force_text(final_attrs['name']),
-            final_attrs['value']
+            final_attrs['value'],
+            force_text(final_attrs.get('placeholder', 'Velg ...')),
         )

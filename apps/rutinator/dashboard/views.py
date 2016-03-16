@@ -1,7 +1,7 @@
 from apps.dashboard.tools import DashboardMixin
 from django.views.generic import ListView, UpdateView, CreateView
 from apps.rutinator.models import Task
-from apps.rutinator.dashboard.forms import NewTaskForm
+from apps.rutinator.forms import NewTaskForm
 from django.core.urlresolvers import reverse_lazy
 
 class TaskListView(DashboardMixin, ListView):
