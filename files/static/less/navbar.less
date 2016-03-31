@@ -9,7 +9,7 @@
 @navbar-height:                    57px;
 
 @navbar-default-color:             #FFF;
-@navbar-default-bg:                #004b80;
+@navbar-default-bg:                #b638bb;
 
 @navbar-default-link-color:                #FFF;
 @navbar-default-link-hover-color:          #FFF;
@@ -31,7 +31,7 @@
 #mainnav {
     position: fixed;
     width: 100%;
-    background: #004b80;
+    background: #b638bb;
     height: @navbar-height;
     z-index: 10;
 }
@@ -229,7 +229,7 @@ svg, rect {
     z-index: 5;
 
     width: 100%;
-    background: rgba(160, 160, 160, 1);
+    background: #cca038;
 
     ul {
         padding: 0;
@@ -295,14 +295,14 @@ svg, rect {
         left: 0;
         width: 100%;
         background: rgba(25, 25, 25, 1);
-        
+
         opacity: 0;
         transition: opacity .3s ease-in-out;
-        
+
         &.mn-nav-open {
             opacity: 1;
         }
-        
+
         &:not(.animation-in-process):not(.mn-nav-open) {
             display: none;
         }
