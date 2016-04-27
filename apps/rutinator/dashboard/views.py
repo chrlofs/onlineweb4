@@ -8,6 +8,7 @@ class TaskListView(DashboardMixin, ListView):
     model = Task
     queryset = Task.objects.all()
     template_name = "rutinator/dashboard/index.html"
+    context_object_name = "tasks"
 
 class CreateTaskView(DashboardMixin, CreateView):
     model = Task

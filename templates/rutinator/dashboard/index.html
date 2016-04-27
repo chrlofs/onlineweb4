@@ -29,13 +29,13 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for mark in marks %}
+                {% for task in tasks %}
                     <tr>
-                        <li><a href="{% url 'dashboard:task_edit' pk=task.id %}">{{ task.title }}</a></li>
-                        <td>{{ task.group }}</td>
+                        <td><a href="{% url 'dashboard:task_edit' pk=task.id %}">{{ task.title }}</a></td>
+                        <td>{{ task.user }}</td>
                         <td>{{ task.deadline|date:'Y-m-d' }}</td>
-                        <td>{{ task.group }}</td>
-                        <td>{{ task.task_type }}</td>
+                        <td>{{ task.get_task_type_display }}</td>
+                        <td>{{ task.description }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>

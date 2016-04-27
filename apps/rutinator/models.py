@@ -11,12 +11,12 @@ class Task(models.Model):
     completed = models.BooleanField(u"Ferdigstilt", default=False)
     completed_date = models.DateTimeField(u"Ferdigstilt dato", blank=True, null=True)
     deadline = models.DateTimeField(u"Tidsfrist", blank=True, null=True)
-    user = models.ForeignKey(User, blank=True, null=True)
+    user = models.ForeignKey(User, blank=False, null=True)
     group = models.ForeignKey(Group)
-    task_type = models.IntegerField(choices=(
+    task_type = models.IntegerField(u"Oppgavetype", choices=(
         (1, 'En gang'),
         (2, 'Gjentagende'),
-    ), blank=True, null=True)
+    ), blank=True, null=False)
 
 
 def __unicode__(self):
