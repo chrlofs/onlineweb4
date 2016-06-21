@@ -42,8 +42,8 @@ return {
         var success = function (data) {
             //var line = $('#' + attendee_id > i)
             Event.showFlashMessage(data.message, 'alert-success');
-            
-            var chosen_text = "Valgt ekstra: ";            
+
+            var chosen_text = "Valgt ekstra: ";
             var options = $(".extras-choice option");
             for (var i = options.length - 1; i >= 0; i--) {
                 if(options[i].text.indexOf(chosen_text) >= 0){
@@ -86,8 +86,8 @@ return {
     showFlashMessage: function (message, tags) {
         var id = new Date().getTime();
         var wrapper = $('.messages')
-        var message = $('<div class="row" id="'+ id +'"><div class="col-md-12">' + 
-                        '<div class="alert ' + tags + '">' + 
+        var message = $('<div class="row" id="'+ id +'"><div class="col-md-12">' +
+                        '<div class="alert ' + tags + '">' +
                         message + '</div></div></div>')
 
         if(wrapper.length == 0){
@@ -106,7 +106,7 @@ return {
 }
 
 
-    
+
 })(jQuery)
 
 $(document).ready(function () {

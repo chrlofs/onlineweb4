@@ -13,7 +13,6 @@ urlpatterns = [
     url(r'^(?P<event_id>\d+)/$', views.event_details, name='dashboard_event_details'),
     # url endpoints for saving forms
     url(r'^(?P<event_id>\d+)/attendance/$', views.event_change_attendance, name='dashboard_event_change_attendance'),
-    url(r'^(?P<event_id>\d+)/attendees/$', views.event_change_attendees, name='dashboard_event_change_attendees'),
     url(r'^(?P<event_id>\d+)/reservation/$', views.event_change_reservation, name='dashboard_event_change_reservation'),
     # catch-all for other tabs
     url(r'^(?P<event_id>\d+)/(?P<active_tab>\w+)/$', views.event_details, name='dashboard_event_details_active'),

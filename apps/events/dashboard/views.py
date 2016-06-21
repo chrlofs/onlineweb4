@@ -149,18 +149,6 @@ def _payment_prices(attendance_event):
 
 
 @login_required
-@permission_required('events.view_event', return_403=True)
-def event_details(request, event_id, active_tab='details'):
-    if not has_access(request):
-        raise PermissionDenied
-
-    context = _create_details_context(request, event_id)
-    context['active_tab'] = active_tab
-
-    return render(request, 'events/dashboard/details.html', context)
-
-
-@login_required
 @permission_required('events.view_attendanceevent', return_403=True)
 def event_change_attendance(request, event_id):
     context = _create_details_context(request, event_id)
@@ -196,13 +184,13 @@ def event_change_attendance(request, event_id):
 
 
 @login_required
-@permission_required('events.view_attendee', return_403=True)
-def event_change_attendees(request, event_id, active_tab='attendees'):
+@permission_required('events.view_event', return_403=True)
+def event_details(request, event_id, active_tab='attendees'):
     if not has_access(request):
         raise PermissionDenied
 
     context = _create_details_context(request, event_id)
-    context['active_tab'] = 'attendees'
+    context['active_tab'] = active_tab
 
     event = context['event']
 
@@ -217,12 +205,6 @@ def event_change_attendees(request, event_id, active_tab='attendees'):
                 return HttpResponse(_('Dette er ikke et påmeldingsarrangement.'), status=400)
 
             return JsonResponse(event_ajax_handler(event, request))
-
-    # NON AJAX
-    context = get_base_context(request)
-
-    context['event'] = event
-    context['active_tab'] = active_tab
 
     extras = {}
     if event.is_attendance_event() and event.attendance_event.extras:
