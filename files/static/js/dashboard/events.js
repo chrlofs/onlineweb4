@@ -36,16 +36,16 @@ var Event = (function ($, tools) {
             row += '<td><a href="'+ attendee.link +'">'+ attendee.last_name +'</td>'
             // Paid cell
             row += '<td><a href="#" data-id="'+ attendee.id +'" class="toggle-attendee paid">'
-            if (attendee.paid)  
+            if (attendee.paid)
                 row += '<i class="fa fa-lg fa-check-square-o checked"></i>'
-            else 
+            else
                 row += '<i class="fa fa-lg fa-square-o"></i>'
             row += '</a></td>'
             // Attended cell
             row += '<td><a href="#" data-id="'+ attendee.id +'" class="toggle-attendee attended">'
             if (attendee.attended)
                 row += '<i class="fa fa-lg fa-check-square-o checked"></i>'
-            else 
+            else
                 row += '<i class="fa fa-lg fa-square-o"></i>'
             row += '</a></td>'
             // Extras cell
@@ -86,6 +86,45 @@ var Event = (function ($, tools) {
         $('#waitlist-table').trigger("update")
     }
 
+    var updateMenuListState = function(id){
+
+        if(id == "attendance") {
+            $("#form-menu-list li a").each(function (index) {
+                $(this).removeClass("disabled");
+            });
+        }
+
+        $("#add-" + id).addClass("disabled")
+    }
+
+    var setupFormMenu = function(){
+
+        $('.add-form').each(function (i) {
+            $(this).on('click', function (e) {
+                e.preventDefault()
+                var id = e.target.id
+
+                if(!$("#" + id).hasClass("disabled")){
+                    id = id.replace("add-", "")
+                    $("#tab-" + id).removeClass("hide")
+
+                    $("#id_" + id + "-active").prop('checked', true);
+
+                    //Show new tab
+                    $("#tab-" + id).tab("show")
+                    $(".tab-pane").removeClass("active")
+                    $("#" + id).addClass("active")
+
+                    updateMenuListState(id);
+                }
+            })
+        })
+    }
+
+    var hideActiveFields = function(){
+        $("div[id$='active']").addClass("hide")
+    }
+
     return {
 
         // Bind them buttons here
@@ -107,6 +146,8 @@ var Event = (function ($, tools) {
 
             // Bind toggle paid/attended and remove use button
             button_binds()
+            setupFormMenu()
+            hideActiveFields()
 
             // Bind the modal button only once
             $('.confirm-remove-user').on('click', function (e) {
@@ -229,8 +270,8 @@ var Event = (function ($, tools) {
         }
 
     }
-    
-    
+
+
 })(jQuery, Dashboard.tools)
 
 $(document).ready(function () {

@@ -9,6 +9,8 @@ urlpatterns = [
     url(r'^past$', views.past, name='dashboard_events_past'),
 
     url(r'^create/$', views.create_event, name='dashboard_event_create'),
+    url(r'^edit/(?P<event_id>\d+)/$', views.edit_event, name='dashboard_event_edit'),
+
     # details views
     url(r'^(?P<event_id>\d+)/$', views.event_details, name='dashboard_event_details'),
     # url endpoints for saving forms

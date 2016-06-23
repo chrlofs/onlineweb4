@@ -537,11 +537,14 @@ class AttendanceEvent(models.Model):
         return self.waitlist
 
     def payment(self):
-        # Importing here to awoid circular dependency error
+        # Importing here to avoid circular dependency error
         from apps.payment.models import Payment
         try:
-            payment = Payment.objects.get(content_type=ContentType.objects.get_for_model(AttendanceEvent),
-                                          object_id=self.event.id)
+            payment = Payment.objects.get(
+                content_type=ContentType.objects.get_for_model(AttendanceEvent),
+                object_id=self.event.id
+            )
+
         except Payment.DoesNotExist:
             payment = None
 

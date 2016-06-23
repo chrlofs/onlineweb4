@@ -1,0 +1,112 @@
+{% extends "dashboard_base.html" %}
+{% load compress %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+{{ event }} - Dashboard - Online
+{% endblock title %}
+
+{% block page-header %}
+Endre Arrangement
+{% endblock %}
+
+{% block styles %}
+    {{ block.super }}
+    {% compress css %}
+    <link rel="stylesheet" type="text/less" href="{{ STATIC_URL }}less/dashboard/events.less" />
+    {% endcompress %}
+{% endblock %}
+
+{% block breadcrumbs %}
+    <li><a href="{% url 'dashboard_events_index' %}">Events</a></li>
+    <li>{{ event }}</li>
+{% endblock %}
+
+{% block content %}
+
+{% if event.id %}
+<div class="row">
+    <div class="col-lg-12">
+        <a href="{{ event.get_absolute_url }}" class ="btn btn-info"><i class="fa fa-play"></i> Vis</a>
+        <a href="/admin/auth/group/{{ group.id }}/delete/" class="btn btn-danger pull-right"><i class="fa fa-times"></i> Slett</a>
+    </div>
+</div>
+<br />
+{% endif %}
+ <div class="row">
+    <div class="col-lg-12">
+        <ul id="form-tab-list" class="nav nav-tabs" role="tablist">
+            {%  for form in forms %}
+            <li id="tab-{{ form.id }}" role="presentation" class="form-tab {% if form.selected %} active {%  elif form.hidden %} hide {%  endif %}">
+                <a href="#{{ form.id }}" aria-controls="{{ form.id }}" role="tab" data-toggle="tab">{{ form.name }}</a>
+            </li>
+            {% endfor %}
+            <li id="add-form-button" role="presentation">
+              <a id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+              </a>
+              <ul id="form-menu-list" class="dropdown-menu add-menu" aria-labelledby="dLabel">
+                  {%  for menu_item in menu_items %}
+                    <li>
+                        <a id="{{ menu_item.id }}" href="#"
+                            {%  if menu_item.disabled %}
+                                class="add-form disabled" data-toggle="tooltip" data-placement="right" title="{{ menu_item.tooltip }}"
+                            {%  else %}
+                                class="add-form"
+                            {% endif %}>
+                            {{ menu_item.name }}
+                        </a>
+                    </li>
+                  {%  endfor %}
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <form class="edit-form" method="post" action="{% url 'dashboard_event_edit' event.id %}" enctype="multipart/form-data">
+            <div id="form-container" class="tab-content">
+                {% for form in forms %}
+                    <div role="tabpanel" class="tab-pane {%  if form.selected %} active {%  endif %}" id="{{ form.id }}">
+                        <div class="row row-space">
+                        {% csrf_token %}
+                        {{ form.form|crispy }}
+                        {% comment %}
+                        {% for field in form %}
+                            {% ifnotequal field.name 'image' %}
+                                <div class="inline">
+                                    <div class="col-md-2">{{ field.label }}</div>
+                                    <div class="col-md-10">
+                                        {{ field }}
+                                        {{ field.errors }}
+                                    </div>
+                                </div>
+                            {% endifnotequal %}
+                        {% endfor %}
+                        {% endcomment %}
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
+                <div class="row row-space">
+                        <div class="col-md-12" style="margin-left: 0px">
+                            <button class="btn btn-success pull-right" type="submit">Lagre</button>
+                        </div>
+                </div>
+        </form>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block js %}
+    {{ block.super }}
+    {% compress js %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/libs/hogan-2.0.0.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/libs/typeahead.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/dashboard/events.js"></script>
+    {% endcompress %}
+{% endblock %}

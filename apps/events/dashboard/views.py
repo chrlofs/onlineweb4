@@ -14,8 +14,8 @@ from django.utils.translation import ugettext as _
 from guardian.decorators import permission_required
 
 from apps.dashboard.tools import get_base_context, has_access
-from apps.events.dashboard.forms import (ChangeAttendanceEventForm, ChangeEventForm,
-                                         ChangeReservationForm)
+from apps.events.dashboard.forms import (AttendanceEventForm, EventForm,
+                                         ChangeReservationForm, PaymentForm)
 from apps.events.dashboard.utils import event_ajax_handler
 from apps.events.models import AttendanceEvent, Attendee, Event, Reservation, Reservee
 from apps.events.utils import get_group_restricted_events, get_types_allowed
@@ -61,7 +61,7 @@ def create_event(request):
     context = get_base_context(request)
 
     if request.method == 'POST':
-        form = ChangeEventForm(request.POST)
+        form = EventForm(request.POST)
         if form.is_valid():
             cleaned = form.cleaned_data
 
@@ -84,39 +84,175 @@ def create_event(request):
             context['change_event_form'] = form
 
     if 'change_event_form' not in context.keys():
-        context['change_event_form'] = ChangeEventForm()
+        context['change_event_form'] = EventForm()
 
     context['event'] = _('Nytt arrangement')
     context['active_tab'] = 'details'
 
     return render(request, 'events/dashboard/details.html', context)
 
+class FormTemplate(object):
 
-def _create_details_context(request, event_id):
-    """
-    Prepare a context to be shared for all detail views.
-    """
+    def __init__(self, id, name, hidden=True):
+        self.id = id
+        self.name = name
+        self.hidden = hidden
+
+
+
+
+def edit_event(request, event_id):
+    if not has_access(request):
+        raise PermissionDenied
+
+    context = get_base_context(request)
 
     event = get_object_or_404(Event, pk=event_id)
-
-    # Start with adding base context and the event itself
-    context = get_base_context(request)
     context['event'] = event
+    context['menu_items'] = _menu_items(event)
 
-    # Add forms
-    context['change_event_form'] = ChangeEventForm(instance=event)
+    if request.method == 'POST':
+        forms = []
+
+        main_form = EventForm(request.POST, instance=event)
+        forms.append(main_form)
+
+        attendance_form = _get_attendance_form(request, event)
+
+        if attendance_form:
+            forms.append(attendance_form)
+
+        payment_form = _get_payment_form(request, event)
+
+        if payment_form:
+            forms.append(payment_form)
+
+        forms_valid = True
+
+        for form in forms:
+            if not form.is_valid():
+                forms_valid = False
+
+        if not forms_valid:
+            context['forms'] = _create_forms(event, forms)
+            messages.error(request, "Noen felt inneholder feil.")
+            return render(request, 'events/dashboard/edit.html', context)
+
+        print(len(forms))
+
+        for form in forms:
+            if isinstance(form, EventForm):
+                event_form = form.save(commit=False)
+                event_form.author = request.user
+                event_form.save()
+            elif isinstance(form, AttendanceEventForm):
+                attendance_form = form.save(commit=False)
+                attendance_form.event = event
+                attendance_form.save()
+            elif isinstance(form, PaymentForm):
+                payment_form = form.save(commit=False)
+                payment_form.content_object = event.attendance_event
+                payment_form.save()
+            else:
+                form.save()
+
+        messages.success(request, _("Arrangementet ble endret."))
+
+    context['forms'] = _create_forms(event)
+    return render(request, 'events/dashboard/edit.html', context)
+
+def _menu_items(event):
+    attendance_item = {'id': 'add-attendance', 'name': 'Påmelding'}
+    payment_item = {'id': 'add-payment', 'name': 'Betaling'}
+
     if event.is_attendance_event():
-        context['change_attendance_form'] = ChangeAttendanceEventForm(instance=event.attendance_event)
-        if event.attendance_event.has_reservation:
-            context['change_reservation_form'] = ChangeReservationForm(instance=event.attendance_event.reserved_seats)
-            seats = event.attendance_event.reserved_seats.seats
-            ReserveeFormSet = modelformset_factory(
-                Reservee, max_num=seats, extra=seats, fields=['name', 'note', 'allergies'])
-            context['change_reservees_formset'] = ReserveeFormSet(
-                queryset=event.attendance_event.reserved_seats.reservees.all())
+        attendance_item['disabled'] = True
+        attendance_item['tooltip'] = "Det er kun mulig med en påmelding per event."
 
-    return context
+    if event.is_attendance_event() and event.attendance_event.payment():
+        payment_item['tooltip'] = "Det er kun mulig med en betaling per event."
+        payment_item['disabled'] = True
+    elif not event.is_attendance_event():
+        payment_item['tooltip'] = "Betaling krever et påmeldingsarrangement"
+        payment_item['disabled'] = True
 
+    menu_items = []
+    menu_items.append(attendance_item)
+    menu_items.append(payment_item)
+
+    return menu_items
+
+def _get_attendance_form(request, event):
+    if event.is_attendance_event():
+        return AttendanceEventForm(request.POST, instance=event.attendance_event)
+    else:
+        attendance_form = AttendanceEventForm(request.POST)
+
+        if attendance_form['active'].value():
+            return attendance_form
+
+    return None
+
+def _get_payment_form(request, event):
+    if event.is_attendance_event() and event.attendance_event.payment():
+        return PaymentForm(request.POST, instance=event.attendance_event.payment())
+    else:
+        payment_form = PaymentForm(request.POST)
+
+        if payment_form['active'].value():
+            return payment_form
+
+    return None
+
+def _create_forms(event, forms=None):
+
+    event_form = FormTemplate("event", _("Arrangement"))
+    attendance_form = FormTemplate("attendance", _("Påmelding"))
+    payment_form = FormTemplate("payment", _("Betaling"))
+
+    if forms:
+        selected_set = False
+
+        for form in forms:
+            if isinstance(form, EventForm):
+                form_template = event_form
+            elif isinstance(form, AttendanceEventForm):
+                form_template = attendance_form
+            elif isinstance(form, PaymentForm):
+                form_template = payment_form
+
+            form_template.form = form
+            form_template.hidden = False
+            if not form.is_valid() and not selected_set:
+                print(form)
+                form_template.selected = True
+                selected_set = True
+
+        if not selected_set:
+            event_form.selected = True
+    else:
+        event_form.selected = True
+        event_form.form = EventForm(instance=event)
+
+        if event.is_attendance_event():
+            attendance_form.form = AttendanceEventForm(instance=event.attendance_event)
+            attendance_form.hidden = False
+        else:
+            attendance_form.form = AttendanceEventForm()
+
+        if event.is_attendance_event() and event.attendance_event.payment():
+            payment_form.form = PaymentForm(instance=event.attendance_event.payment())
+            payment_form.hidden = False
+        else:
+            payment_form.form = PaymentForm()
+
+
+    forms = []
+    forms.append(event_form)
+    forms.append(attendance_form)
+    forms.append(payment_form)
+
+    return forms
 
 def _payment_prices(attendance_event):
     payments = {}
@@ -170,11 +306,11 @@ def event_change_attendance(request, event_id):
             registration_end=registration_end
         )
         attendance_event.save()
-        context['change_attendance_form'] = ChangeAttendanceEventForm(instance=event.attendance_event)
+        context['change_attendance_form'] = AttendanceEventForm(instance=event.attendance_event)
 
     else:
         if request.method == 'POST':
-            form = ChangeAttendanceEventForm(request.POST, instance=event.attendance_event)
+            form = AttendanceEventForm(request.POST, instance=event.attendance_event)
             if form.is_valid():
                 form.save()
                 messages.success(request, _("Påmeldingsdetaljer ble lagret."))
@@ -189,10 +325,10 @@ def event_details(request, event_id, active_tab='attendees'):
     if not has_access(request):
         raise PermissionDenied
 
-    context = _create_details_context(request, event_id)
+    context = get_base_context(request)
     context['active_tab'] = active_tab
 
-    event = context['event']
+    event = get_object_or_404(Event, pk=event_id)
 
     if not event.is_attendance_event():
         messages.error(request, _("Dette er ikke et påmeldingsarrangement."))
@@ -214,15 +350,12 @@ def event_details(request, event_id, active_tab='attendees'):
         count_extras(extras, "attending", event.attendance_event.attendees_qs)
         count_extras(extras, "waits", event.attendance_event.waitlist_qs)
 
-    context['change_event_form'] = ChangeEventForm(instance=event)
     if event.is_attendance_event():
-        context['change_attendance_form'] = ChangeAttendanceEventForm(instance=event.attendance_event)
         prices = _payment_prices(event.attendance_event)
         context['payment_prices'] = prices[0]
         context['payment_price_summary'] = prices[1]
 
     context['extras'] = extras
-    context['change_event_form'] = ChangeEventForm(instance=event)
 
     return render(request, 'events/dashboard/details.html', context)
 
