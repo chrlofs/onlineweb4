@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django import forms
+from django.utils.translation import ugettext as _
 
 from apps.dashboard.widgets import DatetimePickerInput, multiple_widget_generator
 from apps.events.models import AttendanceEvent, Event, Reservation
@@ -50,8 +51,19 @@ class AttendanceEventForm(forms.ModelForm):
 
 class PaymentForm(forms.ModelForm):
     active = forms.BooleanField(required=False)
-
     prefix = 'payment'
+
+    def clean(self):
+        cleaned_data = super(PaymentForm, self).clean()
+        type = cleaned_data.get("payment_type")
+        deadline = cleaned_data.get("deadline")
+        delay = cleaned_data.get("delay")
+
+        if type == 2 and not deadline:
+            self.add_error('deadline', _("Fristen må fylles ut"))
+
+        if type == 3 and not delay:
+            self.add_error('delay', _("Utsettelse må være utfylt"))
 
     class Meta:
         model = Payment

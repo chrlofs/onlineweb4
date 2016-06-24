@@ -97,6 +97,33 @@ var Event = (function ($, tools) {
         $("#add-" + id).addClass("disabled")
     }
 
+    var getEventValues = function(){
+        var event = {}
+        event.start = new Date($("#id_event_start").val())
+        return event
+    }
+
+    var formatDate = function(date){
+
+    }
+
+    var prePopulateFields = function(id){
+
+        event = getEventValues()
+
+        if(id == "attendance"){
+            var date = new Date()
+
+            date.setDate(event.start.getDate() - 7)
+            $("#id_attendance-registration_start").val($.datepicker.formatDate("yy-mm-dd '12:00:00'",date))
+            $("#id_attendance-registration_end").val($.datepicker.formatDate("yy-mm-dd '12:00:00'",event.start))
+
+            date.setDate(event.start.getDate() - 1)
+            $("#id_attendance-unattend_deadline").val($.datepicker.formatDate("yy-mm-dd '12:00:00'",date))
+        }
+
+    }
+
     var setupFormMenu = function(){
 
         $('.add-form').each(function (i) {
@@ -115,7 +142,8 @@ var Event = (function ($, tools) {
                     $(".tab-pane").removeClass("active")
                     $("#" + id).addClass("active")
 
-                    updateMenuListState(id);
+                    updateMenuListState(id)
+                    prePopulateFields(id)
                 }
             })
         })

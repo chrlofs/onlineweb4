@@ -385,7 +385,7 @@ class AttendanceEvent(models.Model):
         related_name='attendance_event')
 
     max_capacity = models.PositiveIntegerField(_('maks-kapasitet'), null=False, blank=False)
-    waitlist = models.BooleanField(_('venteliste'), default=False)
+    waitlist = models.BooleanField(_('venteliste'), default=True)
     guest_attendance = models.BooleanField(_('gjestepåmelding'), null=False, blank=False, default=False)
     registration_start = models.DateTimeField(_('registrerings-start'), null=False, blank=False)
     unattend_deadline = models.DateTimeField(_('avmeldings-frist'), null=False, blank=False)
