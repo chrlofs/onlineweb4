@@ -6,7 +6,7 @@ from datetime import datetime, time, timedelta
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.forms.models import modelformset_factory
+from django.forms import formset_factory, modelformset_factory
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
@@ -14,13 +14,27 @@ from django.utils.translation import ugettext as _
 from guardian.decorators import permission_required
 
 from apps.dashboard.tools import get_base_context, has_access
-from apps.events.dashboard.forms import (AttendanceEventForm, EventForm,
-                                         ChangeReservationForm, PaymentForm)
+from apps.events.dashboard.forms import (AttendanceEventForm, EventForm, ChangeReservationForm,
+                                         PaymentForm, PaymentPriceModelFormSet)
 from apps.events.dashboard.utils import event_ajax_handler
 from apps.events.models import AttendanceEvent, Attendee, Event, Reservation, Reservee
 from apps.events.utils import get_group_restricted_events, get_types_allowed
-from apps.payment.models import PaymentRelation
+from apps.payment.models import PaymentRelation, PaymentPrice
 
+PaymentPriceFormSet = modelformset_factory(
+    PaymentPrice,
+    extra=0,
+    fields=('price', 'description'),
+    min_num=1,
+    can_delete=True,
+    formset=PaymentPriceModelFormSet
+)
+
+enabled_forms = [
+    EventForm,
+    AttendanceEventForm,
+    PaymentForm
+]
 
 @login_required
 @permission_required('events.view_event', return_403=True)
@@ -91,166 +105,139 @@ def create_event(request):
 
     return render(request, 'events/dashboard/details.html', context)
 
-class FormTemplate(object):
-
-    def __init__(self, id, name, hidden=True):
-        self.id = id
-        self.name = name
-        self.hidden = hidden
-
-
-
-
 def edit_event(request, event_id):
     if not has_access(request):
         raise PermissionDenied
 
-    context = get_base_context(request)
-
     event = get_object_or_404(Event, pk=event_id)
+
+    context = get_base_context(request)
     context['event'] = event
     context['menu_items'] = _menu_items(event)
 
     if request.method == 'POST':
-        forms = []
+        forms = _clean_forms(request, event)
 
-        main_form = EventForm(request.POST, instance=event)
-        forms.append(main_form)
+        price_forms = _clean_formset(request, forms, event)
 
-        attendance_form = _get_attendance_form(request, event)
-
-        if attendance_form:
-            forms.append(attendance_form)
-
-        payment_form = _get_payment_form(request, event)
-
-        if payment_form:
-            forms.append(payment_form)
-
-        forms_valid = True
-
-        for form in forms:
-            if not form.is_valid():
-                forms_valid = False
+        forms_valid = _validate_forms(forms, price_forms)
 
         if not forms_valid:
-            context['forms'] = _create_forms(event, forms)
+            context['price_forms'] = price_forms
+            context['forms'] = _set_active_form(forms, price_forms)
             messages.error(request, "Noen felt inneholder feil.")
             return render(request, 'events/dashboard/edit.html', context)
 
-        print(len(forms))
-
-        for form in forms:
-            if isinstance(form, EventForm):
-                event_form = form.save(commit=False)
-                event_form.author = request.user
-                event_form.save()
-            elif isinstance(form, AttendanceEventForm):
-                attendance_form = form.save(commit=False)
-                attendance_form.event = event
-                attendance_form.save()
-            elif isinstance(form, PaymentForm):
-                payment_form = form.save(commit=False)
-                payment_form.content_object = event.attendance_event
-                payment_form.save()
-            else:
-                form.save()
-
+        _save_forms(request, event, forms, price_forms)
         messages.success(request, _("Arrangementet ble endret."))
 
-    context['forms'] = _create_forms(event)
+    context['forms'] = _create_forms(event, context)
     return render(request, 'events/dashboard/edit.html', context)
 
 def _menu_items(event):
-    attendance_item = {'id': 'add-attendance', 'name': 'Påmelding'}
-    payment_item = {'id': 'add-payment', 'name': 'Betaling'}
-
-    if event.is_attendance_event():
-        attendance_item['disabled'] = True
-        attendance_item['tooltip'] = "Det er kun mulig med en påmelding per event."
-
-    if event.is_attendance_event() and event.attendance_event.payment():
-        payment_item['tooltip'] = "Det er kun mulig med en betaling per event."
-        payment_item['disabled'] = True
-    elif not event.is_attendance_event():
-        payment_item['tooltip'] = "Betaling krever et påmeldingsarrangement"
-        payment_item['disabled'] = True
-
     menu_items = []
-    menu_items.append(attendance_item)
-    menu_items.append(payment_item)
+
+    for form in enabled_forms[1:]: #Skips the first element (EventForm)
+        menu_item = {}
+        menu_item['id'] = form.prefix
+        menu_item['name'] = form.name
+        menu_item['tooltip'] = form.menu_condition(event)
+        menu_items.append(menu_item)
 
     return menu_items
 
-def _get_attendance_form(request, event):
+def _create_forms(event, context):
+
+    event_form = EventForm(instance=event)
+    event_form.selected = True
+
     if event.is_attendance_event():
-        return AttendanceEventForm(request.POST, instance=event.attendance_event)
+        attendance_form = AttendanceEventForm(instance=event.attendance_event)
+        attendance_form.hidden = False
     else:
-        attendance_form = AttendanceEventForm(request.POST)
+        attendance_form = AttendanceEventForm()
 
-        if attendance_form['active'].value():
-            return attendance_form
-
-    return None
-
-def _get_payment_form(request, event):
     if event.is_attendance_event() and event.attendance_event.payment():
-        return PaymentForm(request.POST, instance=event.attendance_event.payment())
+        payment_form = PaymentForm(instance=event.attendance_event.payment())
+        payment_form.hidden = False
+
+        context['price_forms'] = PaymentPriceFormSet(queryset=event.attendance_event.payment().prices())
     else:
-        payment_form = PaymentForm(request.POST)
+        payment_form = PaymentForm()
+        context['price_forms'] = PaymentPriceFormSet(queryset=PaymentPrice.objects.none())
 
-        if payment_form['active'].value():
-            return payment_form
 
-    return None
-
-def _create_forms(event, forms=None):
-
-    event_form = FormTemplate("event", _("Arrangement"))
-    attendance_form = FormTemplate("attendance", _("Påmelding"))
-    payment_form = FormTemplate("payment", _("Betaling"))
-
-    if forms:
-        selected_set = False
-
-        for form in forms:
-            if isinstance(form, EventForm):
-                form_template = event_form
-            elif isinstance(form, AttendanceEventForm):
-                form_template = attendance_form
-            elif isinstance(form, PaymentForm):
-                form_template = payment_form
-
-            form_template.form = form
-            form_template.hidden = False
-            if not form.is_valid() and not selected_set:
-                print(form)
-                form_template.selected = True
-                selected_set = True
-
-        if not selected_set:
-            event_form.selected = True
-    else:
-        event_form.selected = True
-        event_form.form = EventForm(instance=event)
-
-        if event.is_attendance_event():
-            attendance_form.form = AttendanceEventForm(instance=event.attendance_event)
-            attendance_form.hidden = False
-        else:
-            attendance_form.form = AttendanceEventForm()
-
-        if event.is_attendance_event() and event.attendance_event.payment():
-            payment_form.form = PaymentForm(instance=event.attendance_event.payment())
-            payment_form.hidden = False
-        else:
-            payment_form.form = PaymentForm()
-
+    #TODO add more forms
 
     forms = []
     forms.append(event_form)
     forms.append(attendance_form)
     forms.append(payment_form)
+
+    return forms
+
+def _clean_forms(request, event):
+    forms = []
+    forms.append(EventForm(request.POST, instance=event))
+
+    _add_form(request, forms, event.attendance_event, AttendanceEventForm)
+    _add_form(request, forms, event.attendance_event.payment(), PaymentForm)
+    #TODO add more forms
+
+    return forms
+
+def _clean_formset(request, forms, event):
+
+    if not any(isinstance(form, PaymentForm) for form in forms):
+        return None
+
+    if event.attendance_event.payment().prices():
+        return PaymentPriceFormSet(request.POST, queryset=event.attendance_event.payment().prices())
+    else:
+        return PaymentPriceFormSet(request.POST)
+
+def _add_form(request, forms, instance, Form):
+    if instance:
+        form = Form(request.POST, instance=instance)
+        form.hidden = False
+        forms.append(form)
+    else:
+        form = Form(request.POST)
+
+        if form['active'].value():
+            form.hidden = False
+            forms.append(form)
+
+# Validate all forms to present all errors to the user
+def _validate_forms(forms, formset):
+    valid = True
+
+    if formset and not formset.is_valid():
+        valid = False
+
+    for form in forms:
+        if not form.is_valid():
+            valid = False
+
+    return valid
+
+def _set_active_form(forms, formset):
+
+    selected_set = False
+
+    for form in forms:
+        form.selected = False
+
+        if not form.is_valid() and not selected_set:
+            form.selected = True
+            selected_set = True
+
+        if not selected_set and formset and not formset.is_valid() and form.prefix == "payment":
+            form.selected = True
+            selected_set = True
+
+    if not selected_set:
+        form[0].selected = True
 
     return forms
 
@@ -415,3 +402,38 @@ def attendee_details(request, attendee_id):
 
     context['attendee'] = attendee
     return render(request, 'events/dashboard/attendee.html', context)
+
+def _save_forms(request, event, forms, price_forms):
+    for form in forms:
+        if isinstance(form, EventForm):
+            event_form = form.save(commit=False)
+            event_form.author = request.user
+            event_form.save()
+        elif isinstance(form, AttendanceEventForm):
+            attendance_form = form.save(commit=False)
+            attendance_form.event = event
+            attendance_form.save()
+        elif isinstance(form, PaymentForm):
+            payment_form = form.save(commit=False)
+            payment_form.content_object = event.attendance_event
+            payment_form.save()
+        else:
+            form.save()
+
+    if price_forms:
+        _save_price_forms(price_forms, event)
+
+def _save_price_forms(price_forms, event):
+    for price_form in price_forms:
+        payment_price = price_form.save(commit=False)
+        payment_price.payment = event.attendance_event.payment()
+        payment_price.save()
+
+    for form in price_forms.deleted_forms:
+        payment_price = form.save(commit=False)
+        # if payment_price.is_in_use:
+        #     message.error(request, _("Kan ikke slette pris hvor noen har betalt."))
+        #     return render(request, 'events/dashboard/edit.html', context)
+        #TODO check if last price
+        #TODO check if anyone has paid
+        payment_price.delete()

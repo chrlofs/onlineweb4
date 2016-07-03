@@ -28,6 +28,7 @@ Endre Arrangement
 <div class="row">
     <div class="col-lg-12">
         <a href="{{ event.get_absolute_url }}" class ="btn btn-info"><i class="fa fa-play"></i> Vis</a>
+        <a href="{% url 'dashboard_event_details' event.id %}" class ="btn btn-info"><i class="glyphicon glyphicon-cog"></i> Administrer</a>
         <a href="/admin/auth/group/{{ group.id }}/delete/" class="btn btn-danger pull-right"><i class="fa fa-times"></i> Slett</a>
     </div>
 </div>
@@ -37,9 +38,9 @@ Endre Arrangement
     <div class="col-lg-12">
         <ul id="form-tab-list" class="nav nav-tabs" role="tablist">
             {%  for form in forms %}
-            <li id="tab-{{ form.id }}" role="presentation" class="form-tab {% if form.selected %} active {%  elif form.hidden %} hide {%  endif %}">
-                <a href="#{{ form.id }}" aria-controls="{{ form.id }}" role="tab" data-toggle="tab">{{ form.name }}</a>
-            </li>
+                <li id="tab-{{ form.prefix }}" role="presentation" class="form-tab {% if form.selected %} active {%  elif form.hidden %} hide {%  endif %}">
+                    <a href="#{{ form.prefix }}" aria-controls="{{ form.prefix }}" role="tab" data-toggle="tab">{{ form.name }}</a>
+                </li>
             {% endfor %}
             <li id="add-form-button" role="presentation">
               <a id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -48,8 +49,8 @@ Endre Arrangement
               <ul id="form-menu-list" class="dropdown-menu add-menu" aria-labelledby="dLabel">
                   {%  for menu_item in menu_items %}
                     <li>
-                        <a id="{{ menu_item.id }}" href="#"
-                            {%  if menu_item.disabled %}
+                        <a id="add-{{ menu_item.id }}" href="#"
+                            {%  if menu_item.tooltip %}
                                 class="add-form disabled" data-toggle="tooltip" data-placement="right" title="{{ menu_item.tooltip }}"
                             {%  else %}
                                 class="add-form"
@@ -68,34 +69,39 @@ Endre Arrangement
 <div class="row">
     <div class="col-lg-12">
         <form class="edit-form" method="post" action="{% url 'dashboard_event_edit' event.id %}" enctype="multipart/form-data">
+            {% csrf_token %}
             <div id="form-container" class="tab-content">
                 {% for form in forms %}
-                    <div role="tabpanel" class="tab-pane {%  if form.selected %} active {%  endif %}" id="{{ form.id }}">
+                    <div role="tabpanel" class="tab-pane {%  if form.selected %} active {%  endif %}" id="{{ form.prefix }}">
                         <div class="row row-space">
-                        {% csrf_token %}
-                        {{ form.form|crispy }}
-                        {% comment %}
-                        {% for field in form %}
-                            {% ifnotequal field.name 'image' %}
-                                <div class="inline">
-                                    <div class="col-md-2">{{ field.label }}</div>
-                                    <div class="col-md-10">
-                                        {{ field }}
-                                        {{ field.errors }}
+                            {{ form|crispy }}
+                            {%  if price_forms and form.prefix == "payment" %}
+                                {{ price_forms.management_form }}
+                                <div style="display:none;" id="form_template">
+                                    <div class="well price-form">
+                                        <a id="delete-__prefix__" href="#" class="delete-price btn btn-sm btn-danger pull-right"><i class="fa fa-times"></i> Slett</a>
+                                        {{ price_forms.empty_form|crispy }}
                                     </div>
                                 </div>
-                            {% endifnotequal %}
-                        {% endfor %}
-                        {% endcomment %}
+                                <div id="price-forms">
+                                    {%  for price_form in price_forms %}
+                                        <div id="price-form-{{ forloop.counter0 }}" class="well price-form">
+                                            <a id="delete-{{ forloop.counter0 }}" href="#" class="delete-price btn btn-sm btn-danger pull-right"><i class="fa fa-times"></i> Slett</a>
+                                            {{ price_form|crispy }}
+                                        </div>
+                                    {%  endfor %}
+                                </div>
+                                <a id="add-price-button" href="#" class="btn btn-info"><i class="glyphicon glyphicon-plus"></i> Legg til Pris</a>
+                            {%  endif %}
                         </div>
                     </div>
                 {% endfor %}
+            </div>
+            <div class="row row-space">
+                <div class="col-md-12" style="margin-left: 0px">
+                    <button class="btn btn-success pull-right" type="submit">Lagre</button>
                 </div>
-                <div class="row row-space">
-                        <div class="col-md-12" style="margin-left: 0px">
-                            <button class="btn btn-success pull-right" type="submit">Lagre</button>
-                        </div>
-                </div>
+            </div>
         </form>
     </div>
 </div>

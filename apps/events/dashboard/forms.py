@@ -1,14 +1,19 @@
 # -*- coding: utf-8 -*-
 
 from django import forms
+from django.forms import BaseModelFormSet
 from django.utils.translation import ugettext as _
 
 from apps.dashboard.widgets import DatetimePickerInput, multiple_widget_generator
 from apps.events.models import AttendanceEvent, Event, Reservation
-from apps.payment.models import Payment
+from apps.payment.models import Payment, PaymentPrice
 
 
 class EventForm(forms.ModelForm):
+
+    prefix = "event"
+    name = "Arrangement"
+    selected = False
 
     class Meta:
         model = Event
@@ -30,6 +35,13 @@ class EventForm(forms.ModelForm):
 class AttendanceEventForm(forms.ModelForm):
     active = forms.BooleanField(required=False)
     prefix = 'attendance'
+    name = "Påmelding"
+    selected = False
+    hidden = True
+
+    def menu_condition(event):
+        if event.is_attendance_event():
+           return "Det er kun mulig med en påmelding per event."
 
     class Meta:
         model = AttendanceEvent
@@ -52,6 +64,16 @@ class AttendanceEventForm(forms.ModelForm):
 class PaymentForm(forms.ModelForm):
     active = forms.BooleanField(required=False)
     prefix = 'payment'
+    name = "Betaling"
+    selected = False
+    hidden = True
+    price_forms = []
+
+    def menu_condition(event):
+        if event.is_attendance_event() and event.attendance_event.payment():
+            return "Det er kun mulig med en betaling per event."
+        elif not event.is_attendance_event():
+            return "Betaling krever et påmeldingsarrangement"
 
     def clean(self):
         cleaned_data = super(PaymentForm, self).clean()
@@ -79,6 +101,20 @@ class PaymentForm(forms.ModelForm):
 
         # Multiple widget generator merges results from regular widget_generator into a single widget dict
         widgets = multiple_widget_generator(widgetlist)
+
+
+class PaymentPriceModelFormSet(BaseModelFormSet):
+    def clean(self):
+        super(PaymentPriceModelFormSet, self).clean()
+
+        multiple_forms = len(self.forms) > 1
+
+        #TODO generate error
+
+        for form in self.forms:
+            if multiple_forms and not form.cleaned_data['description']:
+               raise forms.ValidationError('Beskrivelse må være utfylt når det finnes flere priser')
+
 
 
 class ChangeReservationForm(forms.ModelForm):

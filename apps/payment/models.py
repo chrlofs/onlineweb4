@@ -159,6 +159,9 @@ class PaymentPrice(models.Model):
     price = models.IntegerField(_("pris"))
     description = models.CharField(max_length=128, null=True, blank=True)
 
+    def is_in_use(self):
+        return len(PaymentRelation.objects.filter(payment_price=self)) > 0
+
     def __str__(self):
         return self.description + " (" + str(self.price) + "kr)"
 

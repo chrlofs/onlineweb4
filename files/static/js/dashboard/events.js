@@ -103,10 +103,6 @@ var Event = (function ($, tools) {
         return event
     }
 
-    var formatDate = function(date){
-
-    }
-
     var prePopulateFields = function(id){
 
         event = getEventValues()
@@ -151,6 +147,31 @@ var Event = (function ($, tools) {
 
     var hideActiveFields = function(){
         $("div[id$='active']").addClass("hide")
+        $("div[id$='DELETE']").addClass("hide")
+    }
+
+    var bindAddPriceButton = function(){
+        $("#add-price-button").on('click', function(){
+            var forms = $(".price-form").size()
+            $("[name=form-TOTAL_FORMS]").val(forms.toString());
+
+            html = $("#form_template").clone().html().replace(/__prefix__/g, (forms-1))
+            $("#price-forms").append(html)
+        })
+    }
+
+    var bindDeletePriceButton = function(){
+        console.log("bound")
+        $(".delete-price").on('click', function(e){
+            var id = e.target.id
+            id = id.replace("delete-", "")
+
+            var checked = $("#id_form-" + id + "-DELETE").is(":checked")
+
+            $("#id_form-" + id + "-DELETE").prop('checked', !checked)
+            $("#price-form-" + id).toggleClass("deleted")
+            $(this).toggleClass("btn-danger btn-info")
+        })
     }
 
     return {
@@ -176,6 +197,8 @@ var Event = (function ($, tools) {
             button_binds()
             setupFormMenu()
             hideActiveFields()
+            bindDeletePriceButton()
+            bindAddPriceButton()
 
             // Bind the modal button only once
             $('.confirm-remove-user').on('click', function (e) {
