@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 import ldapdb.models
+import passlib
+import time
+
 from ldapdb.models.fields import CharField, ImageField, IntegerField, ListField
 from onlineweb4.settings.local import LDAP_BASE_DN
 from passlib.hash import ldap_sha512_crypt
 
+SAMBA_SID_CONFIG = 'S-1-0-0-'
 
 class LdapOrgUnit(ldapdb.models.Model):
     """
@@ -40,15 +44,35 @@ class LdapUser(ldapdb.models.Model):
     group = IntegerField(db_column='gidNumber')
     gecos = CharField(db_column='gecos', blank=True)
     home_directory = CharField(db_column='homeDirectory', blank=True)
-    login_shell = CharField(db_column='loginShell', default='/bin/bash')
+    login_shell = CharField(db_column='loginShell', default='/bin/false')
     username = CharField(db_column='uid', primary_key=True, unique=True)
     password = CharField(db_column='userPassword', blank=True)
+
+    # sambaAccount
+    samba_sid = CharField(db_column='sambaSID')
+    samba_flags = CharField(db_column='sambaAcctFlags')
+    samba_pwd_last_set = CharField(db_column='sambaPwdLastSet')
+    samba_pwd_can_change = CharField(db_column='sambaPwdCanChange')
+    ntpassword = CharField(db_column='sambaNTPassword')
+    lmpassword = CharField(db_column='sambaLMPassword')
 
     def __str__(self):
         return self.username
 
     def set_password(self, password):
         self.password = ldap_sha512_crypt.encrypt(password)
+        self.save()
+
+    def enable_shell(self, shell='/bin/bash'):
+        self.login_shell = shell
+
+    def enable_samba_account(self, password):
+        self.samba_sid = SAMBA_SID_CONFIG + str((self.uid * 2) + 1000)
+        self.samba_pwd_last_set = str(int(time.time()))
+        self.samba_pwd_can_change = str(int(time.time()))
+        self.samba_flags = "[U]"
+        self.ntpassword = passlib.hash.nthash.encrypt(password).upper()
+        self.lmpassword = passlib.hash.lmhash.encrypt(password).upper()
         self.save()
 
     def check_password(self, password):

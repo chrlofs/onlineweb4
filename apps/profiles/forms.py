@@ -108,10 +108,18 @@ class MembershipSettingsForm(forms.ModelForm):
         }
 
 
+#SHELL_TYPES = [('Ingen Shell', '/bin/false'), [('Bash', '/bin/bash'), ('Zsh', '/bin/zsh')]]
+
+
 class InternalServicesForm(forms.Form):
+    #shell = forms.ChoiceField(label=u'Shell')
     ow4_password = forms.CharField(widget=forms.PasswordInput(), label=_(u"Online passord"))
     services_password = forms.CharField(widget=forms.PasswordInput(), label=_(u"Ønsket service passord"))
     current_user = None
+
+    #def __init__(self):
+    #    super(InternalServicesForm, self).__init__(*args, **kwargs)
+    #    self.fields['shell'].choices = [shell for shell in SHELL_TYPES]
 
     def clean(self):
         super(InternalServicesForm, self).clean()

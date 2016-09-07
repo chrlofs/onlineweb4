@@ -25,7 +25,7 @@ GROUP_PRIORITY = [
 ]
 
 
-def upsert_user_ldap(user, pwd=None):
+def upsert_user_ldap(user, pwd=None, samba=False):
     """
     Update or Insert a user to LDAP
 
@@ -36,6 +36,7 @@ def upsert_user_ldap(user, pwd=None):
 
     if not user.ntnu_username:
         return False
+
     upsert_success = False
 
     try:
@@ -56,6 +57,9 @@ def upsert_user_ldap(user, pwd=None):
                     ldap_user.username, user.id, ldap_user.uid))
             ldap_user = LdapUser.objects.filter(username=user.ntnu_username).first()
             ldap_user.set_password(pwd)
+
+        if samba and pwd:
+            ldap_user.enable_samba_account(pwd)
 
     except Exception as exception:
         getLogger(__name__).warning('Exception %s' % exception)
