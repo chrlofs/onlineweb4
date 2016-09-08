@@ -4,10 +4,9 @@ import passlib
 import time
 
 from ldapdb.models.fields import CharField, ImageField, IntegerField, ListField
-from onlineweb4.settings.local import LDAP_BASE_DN
-from passlib.hash import ldap_sha512_crypt
+from onlineweb4.settings.local import LDAP_BASE_DN, SAMBA_SID_BASE
+from passlib.hash import ldap_sha512_crypt, nthash, lmhash
 
-SAMBA_SID_CONFIG = 'S-1-0-0-'
 
 class LdapOrgUnit(ldapdb.models.Model):
     """
@@ -52,7 +51,7 @@ class LdapUser(ldapdb.models.Model):
     samba_sid = CharField(db_column='sambaSID')
     samba_flags = CharField(db_column='sambaAcctFlags')
     samba_pwd_last_set = CharField(db_column='sambaPwdLastSet')
-    samba_pwd_can_change = CharField(db_column='sambaPwdCanChange')
+    samba_pwd_must_change = CharField(db_column='sambaPwdMustChange')
     ntpassword = CharField(db_column='sambaNTPassword')
     lmpassword = CharField(db_column='sambaLMPassword')
 
@@ -67,12 +66,12 @@ class LdapUser(ldapdb.models.Model):
         self.login_shell = shell
 
     def enable_samba_account(self, password):
-        self.samba_sid = SAMBA_SID_CONFIG + str((self.uid * 2) + 1000)
+        self.samba_sid = SAMBA_SID_BASE + str((self.uid * 2) + 1000)
         self.samba_pwd_last_set = str(int(time.time()))
-        self.samba_pwd_can_change = str(int(time.time()))
-        self.samba_flags = "[U]"
-        self.ntpassword = passlib.hash.nthash.encrypt(password).upper()
-        self.lmpassword = passlib.hash.lmhash.encrypt(password).upper()
+        self.samba_pwd_must_change = '2524608000' # year 2050
+        self.samba_flags = '[U]'
+        self.ntpassword = nthash.encrypt(password).upper()
+        self.lmpassword = lmhash.encrypt(password).upper()
         self.save()
 
     def check_password(self, password):
