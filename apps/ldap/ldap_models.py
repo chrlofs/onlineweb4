@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
 import ldapdb.models
-import passlib
 import time
 
 from ldapdb.models.fields import CharField, ImageField, IntegerField, ListField
-from onlineweb4.settings.local import LDAP_BASE_DN, SAMBA_SID_BASE
 from passlib.hash import ldap_sha512_crypt, nthash, lmhash
+from django.conf import settings
 
 
 class LdapOrgUnit(ldapdb.models.Model):
     """
     Class for representing an LDAP organizational unit entry
     """
-    base_dn = LDAP_BASE_DN
+    base_dn = settings.LDAP_BASE_DN
     object_classes = ['organizationalUnit']
 
     name = CharField(db_column='ou', primary_key=True, unique=True)
@@ -26,8 +25,13 @@ class LdapUser(ldapdb.models.Model):
     Class for representing an LDAP user entry.
     """
     # LDAP meta-data
-    base_dn = "ou=people," + LDAP_BASE_DN
-    object_classes = ['posixAccount', 'shadowAccount', 'inetOrgPerson']
+    base_dn = "ou=people," + settings.LDAP_BASE_DN
+    object_classes = [
+        'posixAccount',
+        'shadowAccount',
+        'inetOrgPerson',
+        'sambaSamAccount',
+    ]
 
     # inetOrgPerson
     first_name = CharField(db_column='givenName')
@@ -83,7 +87,7 @@ class LdapGroup(ldapdb.models.Model):
     Class for representing an LDAP group entry.
     """
     # LDAP meta-data
-    base_dn = "ou=groups," + LDAP_BASE_DN
+    base_dn = "ou=groups," + settings.LDAP_BASE_DN
     object_classes = ['posixGroup']
 
     # posixGroup attributes
