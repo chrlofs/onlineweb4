@@ -1,3 +1,4 @@
+{% load compress %}
 {% load markdown_deux_tags %}
 {% load calendar_filters %}
 
@@ -14,8 +15,10 @@
 
   <link rel="icon" href="{{ STATIC_URL }}img/favicon.png">
   <link href="https://fonts.googleapis.com/css?family=Ubuntu:400,300" rel="stylesheet" type="text/css">
+  {% compress css %}
   <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/splash/reset.css">
   <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/splash/main.css">
+  {% endcompress css %}
 
   <link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/hfgffimlnajpbenfpaofmmffcdmgkllf">
 </head>
@@ -43,13 +46,12 @@
         <h1>Samarbeidspartnere</h1>
         <div class="gold-partner">
           <a href="http://steria.no/"><img src="{{ STATIC_URL }}img/splash/partners/soprasteria_white.png" alt="Steria" class="partners_steria"></a>
-          <a href="http://mesan.no//"><img src="{{ STATIC_URL }}img/splash/partners/mesan_white.png" alt="Mesan" class="partners_mesan"></a><br>
+          <a href="http://computas.no/"><img src="{{ STATIC_URL }}img/splash/partners/computas_white.png" alt="Computas" class="partners_computas"></a>
         </div>
         <br/>
         <div class="partners">
-          <a href="http://computas.no/"><img src="{{ STATIC_URL }}img/splash/partners/computas_white.png" alt="Computas" class="partners_computas"></a>
+          <a href="http://bouvet.no/"><img src="{{ STATIC_URL }}img/splash/partners/bouvet_white.png" alt="Bouvet" class="partners_bouvet"></a>
           <a href="http://knowit.no/"><img src="{{ STATIC_URL }}img/splash/partners/knowit_white.png" alt="knowit" class="partners_knowit"></a>
-          <a href="http://www.makingwaves.no/"><img src="{{ STATIC_URL }}img/splash/partners/makingwaves_white.png" alt="Making Waves" class="partners_makingwaves"></a>
         </div>
       </div>
     </footer>
@@ -73,7 +75,7 @@
     <article>
       <h1>Fadderukene</h1>
       <p>I fadderukene skal du få bli kjent med både linjeforeningen, NTNU og mange medstudenter. Dette er den viktigste portalen for å stifte bekjentskaper som varer studietiden ut. Vi i Online anbefaler alle å ta del i det supre fadderopplegget vårt!</p>
-      <p>Fadderukene starter etter immatrikuleringen den 11. august.</p>
+      <p>Fadderukene starter etter immatrikuleringen den 16. august.</p>
 
       <p>Se også vår <a href="#" onclick="open_window('#student101'); return false;">Ny i Trondheim</a>-guide.</p>
     </article>
@@ -93,7 +95,7 @@
           {% for events in splash_year.events %}
             {% with events|first as firstElement %}
             <li class="" data-date="{{ firstElement.start_time.month }}{{ firstElement.start_time.day }}">
-              <span>{{ firstElement.start_time|date:"F" }}<span>{{ firstElement.start_time.day }}</span>
+              <span>{{ firstElement.start_time|date:"l" }}<span>{{ firstElement.start_time.day }}</span>{{ firstElement.start_time|date:"F" }}</span>
 
               <article>
                 {% for event in events %}
@@ -149,7 +151,7 @@
         <h3>Bedrifter</h3>
         <p>Er du bedrift på jakt etter bedriftspresentasjon eller kurs? Klikk <a href="#" onclick="open_window('#bedrifter'); return false;">her</a> for mer informasjon.</p>
       </div>
-      
+
 
       <div class="right" id="social">
 
@@ -225,7 +227,7 @@
     kontorvakter, møter, administrere tilganger og passe på at det er tilstrekkelig med mat, drikke, rekvisitter og lignende.
     Så hvis du har en gledesspreder i deg og liker å spre trivsel til dine medelever er trikom komiteen for deg.
     </p>
-    <p style="color:#F00;">Søknadsfrist er søndag 23. august kl. 23:59!</p>
+    <p style="color:#F00;">Søknadsfrist er søndag 28. august kl. 23:59!</p>
   </section>
 
   <!--[mod:Samarbeid med næringslivet]-->

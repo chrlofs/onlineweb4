@@ -1,24 +1,24 @@
 # -*- coding: utf-8 -*-
 
-from datetime import datetime, timedelta
 from collections import OrderedDict
+from datetime import datetime, timedelta
+from functools import reduce
 
 from django.conf import settings
 from django.contrib.auth.models import Group
+from django.contrib.contenttypes.models import ContentType
+from django.core import validators
 from django.db import models
+from django.db.models import Case, Q, Value, When
 from django.template.defaultfilters import slugify
-from unidecode import unidecode
 from django.utils import timezone
 from django.utils.translation import ugettext as _
-from django.contrib.contenttypes.models import ContentType
+from filebrowser.fields import FileBrowseField
+from unidecode import unidecode
 
 from apps.authentication.models import FIELD_OF_STUDY_CHOICES
 from apps.companyprofile.models import Company
 from apps.marks.models import get_expiration_date
-
-from filebrowser.fields import FileBrowseField
-from functools import reduce
-
 
 User = settings.AUTH_USER_MODEL
 
@@ -33,6 +33,37 @@ TYPE_CHOICES = (
 )
 
 
+# Managers
+
+class EventOrderedByRegistration(models.Manager):
+    """
+    Order events by registration start if registration start is within 7 days of today.
+    """
+    def get_queryset(self):
+        now = timezone.now()
+        DELTA_FUTURE_SETTING = settings.OW4_SETTINGS.get('events').get('FEATURED_DAYS_FUTURE')
+        DELTA_PAST_SETTING = settings.OW4_SETTINGS.get('events').get('FEATURED_DAYS_PAST')
+        DAYS_BACK_DELTA = timezone.now() - timedelta(days=DELTA_PAST_SETTING)
+        DAYS_FORWARD_DELTA = timezone.now() + timedelta(days=DELTA_FUTURE_SETTING)
+
+        return super(EventOrderedByRegistration, self).get_queryset().\
+            annotate(registration_filtered=Case(
+                When(Q(event_end__gte=now) &
+                     Q(attendance_event__registration_start__gte=DAYS_BACK_DELTA) &
+                     Q(attendance_event__registration_start__lte=DAYS_FORWARD_DELTA),
+                     then='attendance_event__registration_start'),
+                default='event_end',
+                output_field=models.DateTimeField()
+            )
+        ).annotate(is_today=Case(
+            When(event_end__date=now.date(),
+                 then=Value(1)),
+            default=Value(0),
+            output_field=models.IntegerField()
+        )
+        ).order_by('-is_today', 'registration_filtered')
+
+
 class Event(models.Model):
     """
     Base class for Event-objects.
@@ -41,14 +72,19 @@ class Event(models.Model):
     IMAGE_FOLDER = "images/events"
     IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.gif', '.png', '.tif', '.tiff']
 
+    # Managers
+    objects = models.Manager()
+    by_registration = EventOrderedByRegistration()
+
     author = models.ForeignKey(User, related_name='oppretter')
     title = models.CharField(_('tittel'), max_length=60)
     event_start = models.DateTimeField(_('start-dato'))
     event_end = models.DateTimeField(_('slutt-dato'))
     location = models.CharField(_('lokasjon'), max_length=100)
-    ingress_short = models.CharField(_("kort ingress"), max_length=150)
-    ingress = models.TextField(_('ingress'))
-    description = models.TextField(_('beskrivelse'))
+    ingress_short = models.CharField(_("kort ingress"), max_length=150,
+                                     validators=[validators.MinLengthValidator(25)])
+    ingress = models.TextField(_('ingress'), validators=[validators.MinLengthValidator(25)])
+    description = models.TextField(_('beskrivelse'), validators=[validators.MinLengthValidator(45)])
     image = FileBrowseField(_("bilde"), max_length=200,
                             directory=IMAGE_FOLDER, extensions=IMAGE_EXTENSIONS, null=True, blank=True)
     event_type = models.SmallIntegerField(_('type'), choices=TYPE_CHOICES, null=False)
@@ -376,6 +412,10 @@ class AttendanceEvent(models.Model):
             return True if self.reserved_seats else False
         except Reservation.DoesNotExist:
             return False
+
+    @property
+    def has_extras(self):
+        return bool(self.extras.exists())
 
     @property
     def attendees_qs(self):

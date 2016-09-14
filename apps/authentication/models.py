@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
 
 import datetime
-import urllib
 import hashlib
+import urllib
+from functools import reduce
 
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser, Group
 from django.db import models
-from django.utils.translation import ugettext as _
 from django.utils import timezone
 from django.utils.html import strip_tags
-
-from functools import reduce
+from django.utils.translation import ugettext as _
 
 # If this list is changed, remember to check that the year property on
 # OnlineUser is still correct!
@@ -25,6 +24,7 @@ FIELD_OF_STUDY_CHOICES = [
     (13, _('Spillteknologi')),
     (14, _('Kunstig intelligens')),
     (15, _('Helseinformatikk')),
+    (16, _('Interaksjonsdesign, spill- og læringsteknologi')),
     (30, _('Annen mastergrad')),
     (80, _('PhD')),
     (90, _('International')),
@@ -83,7 +83,6 @@ def get_length_of_field_of_study(field_of_study):
 
 
 class OnlineUser(AbstractUser):
-
     IMAGE_FOLDER = "images/profiles"
     IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.gif', '.png']
 
@@ -287,7 +286,7 @@ class Email(models.Model):
 class RegisterToken(models.Model):
     user = models.ForeignKey(OnlineUser, related_name="register_user")
     email = models.EmailField(_("epost"), max_length=254)
-    token = models.CharField(_("token"), max_length=32)
+    token = models.CharField(_("token"), max_length=32, unique=True)
     created = models.DateTimeField(_("opprettet dato"), editable=False, auto_now_add=True)
 
     @property

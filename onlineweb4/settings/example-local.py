@@ -28,9 +28,18 @@ DATABASES = {
         'PASSWORD': '',
         'HOST': '',
         'PORT': '',
-    },
+    }#,
+    #'ldap': {
+    #    'ENGINE': 'ldapdb.backends.ldap',
+    #    'NAME': 'ldap://localhost',
+    #    'USER': 'cn=admin,dc=online,dc=ntnu,dc=no',
+    #    'PASSWORD': 'secretpassword',
+    #    #'TLS': True,
+    #    #'CONNECTION_OPTIONS': {
+    #    #    ldap.OPT_X_TLS_DEMAND: True,
+    #    #}
+    #}
 }
-
 
 # Email settings
 # If you are actually sending mail, this should be replaced with an

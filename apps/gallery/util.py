@@ -5,12 +5,12 @@ import os
 import shutil
 import uuid
 
-from PIL import Image, ImageOps
 from django.conf import settings as django_settings
-from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.core.files.uploadedfile import InMemoryUploadedFile, TemporaryUploadedFile
+from PIL import Image, ImageOps
 
-from apps.gallery.models import UnhandledImage, ResponsiveImage
 from apps.gallery import settings as gallery_settings
+from apps.gallery.models import ResponsiveImage, UnhandledImage
 
 
 class GalleryStatus(object):
@@ -231,8 +231,8 @@ class UploadImageHandler(BaseImageHandler):
         if isinstance(image, UnhandledImage):
             self._log.debug('ImageUploadHandler instanced with %s' % image)
         # Or are we performing a new upload?
-        elif isinstance(image, InMemoryUploadedFile):
-            self._log.debug('ImageUploadHandler instanced with in-memory file data')
+        elif isinstance(image, InMemoryUploadedFile) or isinstance(image, TemporaryUploadedFile):
+            self._log.debug('ImageUploadHandler instanced with %s file data' % image.__class__)
 
             # Handle the upload of the image
             self._handle_upload(image)
@@ -251,7 +251,7 @@ class UploadImageHandler(BaseImageHandler):
         """
 
         # Save image to disk or break early on failure
-        original = self._save_in_memory_file_data(memory_object)
+        original = self._save_temp_uploaded_file_data(memory_object)
         if not original:
             self.status = original
             return
@@ -281,10 +281,10 @@ class UploadImageHandler(BaseImageHandler):
         self._log.debug('Successfully created UnhandledImage %s' % self.image)
         self.status = GalleryStatus(True, 'success', self.image)
 
-    def _save_in_memory_file_data(self, memory_object):
+    def _save_temp_uploaded_file_data(self, memory_object):
         """
         Helper method that stores data from an uploaded image from memory onto disk
-        :param memory_object: A Django InMemoryUploadedFile object
+        :param memory_object: A Django InMemoryUploadedFile or TemporaryUploadedFile object
         """
 
         # Fetch the name and extension to generate the final file path using uuid's
@@ -296,18 +296,18 @@ class UploadImageHandler(BaseImageHandler):
         )
         filepath = os.path.abspath(filepath)
 
-        self._log.debug('_save_in_memory_file_data: Attempting to store in-memory image at %s' % filepath)
+        self._log.debug('_save_temp_uploaded_file_data: Attempting to store uploaded image at %s' % filepath)
         # Open a file pointer in binary mode and write the image data chunks from memory
         try:
             with open(filepath, 'wb+') as destination:
                 for chunk in memory_object.chunks():
                     destination.write(chunk)
         except IOError as e:
-            self._log.error('_save_in_memory_file_data: Failed to save in memory image! "%s"' % repr(e))
+            self._log.error('_save_temp_uploaded_file_data: Failed to save uploaded image! "%s"' % repr(e))
 
             return GalleryStatus(False, str(e), memory_object)
 
-        self._log.debug('_save_in_memory_file_data: Stored in-memory image successfully')
+        self._log.debug('_save_temp_uploaded_data: Stored uploaded image successfully')
 
         return GalleryStatus(True, 'success', filepath)
 
@@ -465,6 +465,7 @@ class ResponsiveImageHandler(BaseImageHandler):
         :return: A GalleryStatus object
         """
 
+        # Start by declaring all the paths the image versions will be saved to
         source_path = get_absolute_path_to_original(self.image)
 
         wide_destination_path = os.path.join(
@@ -493,11 +494,38 @@ class ResponsiveImageHandler(BaseImageHandler):
             os.path.basename(source_path)
         )
 
-        wide = self._resize_image(source_path, wide_destination_path, gallery_settings.RESPONSIVE_IMAGES_WIDE_SIZE)
-        lg = self._resize_image(source_path, lg_destination_path, gallery_settings.RESPONSIVE_IMAGES_LG_SIZE)
-        md = self._resize_image(source_path, md_destination_path, gallery_settings.RESPONSIVE_IMAGES_MD_SIZE)
-        sm = self._resize_image(source_path, sm_destination_path, gallery_settings.RESPONSIVE_IMAGES_SM_SIZE)
-        xs = self._resize_image(source_path, xs_destination_path, gallery_settings.RESPONSIVE_IMAGES_XS_SIZE)
+        self._log.debug(
+            'Downsizing images based on model profile: %s' % repr(
+                gallery_settings.MODELS[self._config['preset']]['sizes']
+            )
+        )
+
+        # Resize the images based on bootstrap breakpoint sizes for each preset type
+        wide = self._resize_image(
+            source_path,
+            wide_destination_path,
+            gallery_settings.MODELS[self._config['preset']]['sizes']['lg']
+        )
+        lg = self._resize_image(
+            source_path,
+            lg_destination_path,
+            gallery_settings.MODELS[self._config['preset']]['sizes']['lg']
+        )
+        md = self._resize_image(
+            source_path,
+            md_destination_path,
+            gallery_settings.MODELS[self._config['preset']]['sizes']['md']
+        )
+        sm = self._resize_image(
+            source_path,
+            sm_destination_path,
+            gallery_settings.MODELS[self._config['preset']]['sizes']['sm']
+        )
+        xs = self._resize_image(
+            source_path,
+            xs_destination_path,
+            gallery_settings.MODELS[self._config['preset']]['sizes']['xs']
+        )
 
         # Aggregate statuses
         self.status = wide and lg and md and sm and xs
@@ -560,14 +588,9 @@ class ResponsiveImageHandler(BaseImageHandler):
         size = (self._config['width'], self._config['height'])
         max_size = (self.image.image.width, self.image.image.height)  # self.image is an UnhandledImage object
 
-        if preset in ('article', 'event'):
-            model = gallery_settings.ARTICLE
-        elif preset in ('company',):
-            model = gallery_settings.COMPANY
-        elif preset in ('offline',):
-            model = gallery_settings.OFFLINE
-        elif preset in ('product',):
-            model = gallery_settings.PRODUCT
+        # Verify that the selected preset from the client exists
+        if preset in gallery_settings.MODELS:
+            model = gallery_settings.MODELS[preset]
         else:
             return GalleryStatus(False, 'Config contained illegal value for "preset"')
 

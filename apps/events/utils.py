@@ -1,22 +1,19 @@
 # -*- coding: utf-8 -*-
+import logging
 from datetime import timedelta
 
+import icalendar
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.mail import EmailMessage, send_mail
-
-from django.core.signing import Signer, BadSignature
+from django.core.signing import BadSignature, Signer
 from django.http import HttpResponse
 from django.utils import timezone
 from filebrowser.settings import VERSIONS
 
 from apps.authentication.models import OnlineUser as User
-from apps.events.models import Attendee, Event, TYPE_CHOICES
+from apps.events.models import TYPE_CHOICES, Attendee, Event
 from apps.payment.models import PaymentDelay, PaymentRelation
-from apps.splash.models import SplashYear
-
-import icalendar
-import logging
 
 
 def get_group_restricted_events(user, all_events=False):
@@ -178,22 +175,6 @@ class EventCalendar(Calendar):
         self.cal.add_component(cal_event)
 
 
-class SplashCalendar(Calendar):
-    def add_event(self, event):
-        cal_event = icalendar.Event()
-        cal_event.add('dtstart', event.start_time)
-        cal_event.add('dtend', event.end_time)
-        cal_event.add('summary', event.title)
-        cal_event.add('description', event.content)
-        cal_event.add('uid', 'splash-' + str(event.id) + '@online.ntnu.no')
-
-        self.cal.add_component(cal_event)
-
-    def events(self):
-        self.add_events(SplashYear.objects.current_events())
-        self.filename = 'events'
-
-
 def find_image_versions(event):
     img = event.image
     img_strings = []
@@ -352,6 +333,8 @@ def handle_mail_participants(event, _from_email, _to_email_value, subject, _mess
         from_email = settings.EMAIL_FAGKOM
     elif from_email_value == '5':
         from_email = settings.EMAIL_EKSKOM
+    elif from_email_value == '6':
+        from_email = settings.EMAIL_ITEX
 
     # Who to send emails to
     send_to_users = _to_email_options[_to_email_value][0]

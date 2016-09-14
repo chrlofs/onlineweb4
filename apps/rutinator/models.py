@@ -1,10 +1,13 @@
-from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import Group
-
+from django.db import models
 
 User = settings.AUTH_USER_MODEL
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4679cfe7942eb181b8ce20f96cb201573d0e91f5
 class Task(models.Model):
     title = models.CharField(u"Tittel", max_length=45)
     description = models.CharField(u"Beskrivelse", max_length=100)
@@ -13,6 +16,7 @@ class Task(models.Model):
     deadline = models.DateTimeField(u"Tidsfrist", blank=True, null=True)
     user = models.ForeignKey(User, blank=True, null=True)
     group = models.ForeignKey(Group)
+<<<<<<< HEAD
     task_type = models.IntegerField(choices=(
         (1, 'En gang'),
         (2, 'Gjentagende'),
@@ -21,3 +25,8 @@ class Task(models.Model):
 
 def __unicode__(self):
     return self.title
+=======
+
+    def __unicode__(self):
+        return self.title
+>>>>>>> 4679cfe7942eb181b8ce20f96cb201573d0e91f5
