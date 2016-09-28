@@ -165,6 +165,9 @@ GUARDIAN_RENDER_403 = True
 # Django-Taggit settings
 TAGGIT_CASE_INSENSITIVE = True
 
+# LDAP
+LDAP_BASE_DN = 'dc=online,dc=ntnu,dc=no'
+
 # List of usergroups that should be listed under "Finn brukere" in user profile
 USER_SEARCH_GROUPS = [
     16,  # appKom
@@ -242,6 +245,9 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.staticfiles',
 
+    # LDAP
+    'ldapdb',
+
     # Onlineweb 4 apps
     'apps.api',
     'apps.approval',
@@ -270,6 +276,7 @@ INSTALLED_APPS = (
     'apps.splash',
     'apps.shop',
     'apps.webshop',
+    'apps.ldap',
     'scripts',
 
     #External apps

@@ -4,11 +4,11 @@ import uuid
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
-# from django.db.models import signals
+from django.db.models import signals
 from django.db.models.signals import m2m_changed, post_save
 from django.dispatch import receiver
 
-# from apps.authentication.models import OnlineUser
+from apps.authentication.models import OnlineUser
 from apps.authentication.tasks import SynchronizeGroups
 
 User = get_user_model()
