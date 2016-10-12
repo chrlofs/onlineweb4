@@ -2,17 +2,17 @@
 
 import json
 import logging
-import stripe
 
+import stripe
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.mail import EmailMessage
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
 
-from apps.payment.models import Payment, PaymentRelation, PaymentPrice, PaymentTransaction
+from apps.payment.models import Payment, PaymentPrice, PaymentRelation, PaymentTransaction
 from apps.webshop.models import OrderLine
 
 
@@ -128,6 +128,11 @@ def webshop_pay(request):
 
             try:
                 stripe.api_key = settings.STRIPE_PRIVATE_KEYS["prokom"]
+
+                if not order_line.is_valid():
+                    error = "Ordren er ikke gyldig."
+                    messages.error(request, error)
+                    return HttpResponse(error, content_type="text/plain", status=400)
 
                 charge = stripe.Charge.create(
                     amount=amount,
@@ -269,7 +274,7 @@ def _send_webshop_mail(order_line):
     )
 
     logging.getLogger(__name__).debug("Logging for send webshop mail")
-    logging.getLogger(__name__).info(str(order_line))
+    logging.getLogger(__name__).info("%s (#%s)" % (str(order_line), order_line.id))
 
     message += "\nDine produkter:"
     products = ""

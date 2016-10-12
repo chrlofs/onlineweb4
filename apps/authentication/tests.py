@@ -1,12 +1,16 @@
 import logging
-
+from copy import deepcopy
 from datetime import timedelta
 
-from django_dynamic_fixture import G
-from django.test import TestCase
+from django.conf import settings
+from django.contrib.auth.models import Group
+from django.core.urlresolvers import reverse
+from django.test import TestCase, override_settings
 from django.utils import timezone
+from django_dynamic_fixture import G
+from rest_framework import status
 
-from apps.authentication.models import RegisterToken, OnlineUser, Email
+from apps.authentication.models import Email, OnlineUser, RegisterToken
 
 
 class AuthenticationTest(TestCase):
@@ -92,3 +96,68 @@ class AuthenticationTest(TestCase):
     def testEmailPrimaryOnCreation(self):
         email = G(Email, user=self.user, email="test@test.com")
         self.assertTrue(email.primary)
+
+
+class UserGroupSyncTestCase(TestCase):
+    def setUp(self):
+        self.user = G(OnlineUser)
+        self.source_group = G(Group)
+        self.destination_group = G(Group)
+
+        group_syncer_settings = deepcopy(settings)
+        self.GROUP_SYNCER_SETTINGS = [
+            {
+                'name': 'Group syncer test',
+                'source': [
+                    self.source_group.id,
+                ],
+                'destination': [
+                    self.destination_group.id
+                ]
+            }
+        ]
+
+        group_syncer_settings.GROUP_SYNCER = self.GROUP_SYNCER_SETTINGS
+
+        self.group_syncer_settings = group_syncer_settings
+
+    def test_dont_sync_members_if_no_syncers(self):
+        self.user.groups.add(self.source_group)
+
+        self.assertNotIn(self.destination_group, self.user.groups.all())
+
+    def test_sync_members_of_group_to_group(self):
+        with override_settings(GROUP_SYNCER=self.GROUP_SYNCER_SETTINGS):
+            self.user.groups.add(self.source_group)
+
+        self.assertIn(self.destination_group, self.user.groups.all())
+
+    def test_sync_remove_user_from_group(self):
+        with override_settings(GROUP_SYNCER=self.GROUP_SYNCER_SETTINGS):
+            self.user.groups.add(self.source_group)
+            self.user.groups.remove(self.source_group)
+
+        self.assertNotIn(self.destination_group, self.user.groups.all())
+
+
+class AuthenticationURLTestCase(TestCase):
+    def test_auth_login_view(self):
+        url = reverse('auth_login')
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_auth_register_view(self):
+        url = reverse('auth_register')
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_auth_recover_view(self):
+        url = reverse('auth_recover')
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

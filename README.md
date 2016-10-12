@@ -1,7 +1,6 @@
 Onlineweb 4
 ==========
-
-[![Build Status](https://online.ntnu.no/tc/app/rest/builds/buildType%3A%28Onlineweb4_Build%29/statusIcon)](https://online.ntnu.no/tc/viewType.html?buildTypeId=Onlineweb4_Build&tab=buildTypeStatusDiv&branch_Onlineweb4=__all_branches__&guest=1) [![Build status](https://ci.frigg.io/dotKom/onlineweb4.svg)](https://ci.frigg.io/dotKom/onlineweb4/last/) [![Coverage status](https://ci.frigg.io/dotKom/onlineweb4/coverage.svg)](https://ci.frigg.io/dotKom/onlineweb4/last/) 
+[![Build Status](https://ci.online.ntnu.no/api/badges/dotKom/onlineweb4/status.svg)](https://ci.online.ntnu.no/dotKom/onlineweb4) [![Build status](https://ci.frigg.io/dotKom/onlineweb4/develop.svg)](https://ci.frigg.io/dotKom/onlineweb4/last/) [![Coverage status](https://ci.frigg.io/dotKom/onlineweb4/develop/coverage.svg)](https://ci.frigg.io/dotKom/onlineweb4/last/) 
 
 Requirements
 ------------
@@ -9,7 +8,7 @@ Requirements
 Download the latest versions of the following software
 
 * [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
-* [Vagrant](http://downloads.vagrantup.com/)
+* [Vagrant](https://www.vagrantup.com/downloads.html)
 * [Git](http://git-scm.com)
     * the [GitHub for Windows](http://windows.github.com/) app is probably the easiest way to install and use Git on Windows
 * SSH - On Windows SSH is included with Git/GitHub for Windows.
@@ -25,6 +24,16 @@ $ git config --global user.email <your.github@email.com>
 $ git clone --recursive git@github.com:dotKom/onlineweb4.git
 $ cd onlineweb4
 ```
+
+
+CD/CI
+=======
+
+Pushes made to the develop branch will trigger a redeployment of the application on [dev.online.ntnu.no](https://dev.online.ntnu.no).
+
+Pull requests trigger containerized builds that perform code style checks and tests. You can view the details of these tests by clicking the "detail" link in the pull request checks status area.
+
+aefaef
 
 Alternatively on Windows, use the GitHub for Windows app to setup everything
 

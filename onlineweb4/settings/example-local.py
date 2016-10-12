@@ -28,9 +28,8 @@ DATABASES = {
         'PASSWORD': '',
         'HOST': '',
         'PORT': '',
-    },
+    }
 }
-
 
 # Email settings
 # If you are actually sending mail, this should be replaced with an

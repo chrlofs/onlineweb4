@@ -28,6 +28,8 @@ EMAIL_BEDKOM = 'bedkom@online.ntnu.no'
 EMAIL_DOTKOM = 'dotkom@online.ntnu.no'
 EMAIL_EKSKOM = 'ekskom@online.ntnu.no'
 EMAIL_FAGKOM = 'fagkom@online.ntnu.no'
+EMAIL_HS = 'hs@online.ntnu.no'
+EMAIL_ITEX = 'itex@online.ntnu.no'
 EMAIL_PROKOM = 'prokom@online.ntnu.no'
 EMAIL_TRIKOM = 'trikom@online.ntnu.no'
 
@@ -157,7 +159,7 @@ PIZZA_ADMIN_GROUP = 'pizzaadmin'
 GRAPPELLI_ADMIN_TITLE = 'Onlineweb'
 
 # Guardian settings
-ANONYMOUS_USER_ID = -1
+ANONYMOUS_USER_NAME = 'anonymoususer'
 GUARDIAN_RENDER_403 = True
 
 # Django-Taggit settings
@@ -262,7 +264,8 @@ INSTALLED_APPS = (
     'apps.inventory',
     'apps.payment',
     'apps.posters',
-    'apps.rutinator',
+    #'apps.rutinator',
+    'apps.slack',
     'apps.sso',
     'apps.splash',
     'apps.shop',
@@ -356,6 +359,14 @@ LOGGING = {
     }
 }
 
+SLACK_INVITER = {
+    # e.g. onlinentnu
+    'team_name': 'team_name_here',
+    # Token generated using OAuth2: https://api.slack.com/docs/oauth
+    # Scopes needed: client+admin
+    'token': 'xoxp-1234_fake'
+}
+
 # crispy forms settings
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
@@ -397,6 +408,26 @@ REST_FRAMEWORK = {
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_URLS_REGEX = r'^/api/v1/.*$' # Enables CORS on /api/v1/ endpoints only
+
+OW4_SETTINGS = {
+   'events': {
+       'FEATURED_DAYS_FUTURE': os.getenv('OW4_EVENTS_FEATURED_DAYS_FUTURE', 3),
+       'FEATURED_DAYS_PAST': os.getenv('OW4_EVENTS_FEATURED_DAYS_PAST', 3),
+   }
+}
+
+APPROVAL_SETTINGS = {
+    'SEND_APPROVER_NOTIFICATION_EMAIL': True,
+}
+
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            'min_length': 8,
+        }
+    }
+]
 
 # Remember to keep 'local' last, so it can override any setting.
 for settings_module in ['filebrowser', 'django_wiki', 'local']:  # local last

@@ -44,7 +44,7 @@
                                     </button>
                                     <ul class="dropdown-menu" role="menu">
                                         <li><a href="{% url 'admin:events_event_change' event.id %}">Rediger i administrasjonspanelet</a></li>
-                                        <li><a href="{% url 'dashboard_event_details' event.id %}">Åpne i dashboardet</a></li>
+                                        <li><a href="{% url 'dashboard_event_change_attendees' event.id %}">Åpne i dashboardet</a></li>
                                         {% if event.is_attendance_event %}
                                             <li><a href="{% url 'event_attendees_pdf' event.id %}">Påmeldingsliste</a></li>
                                             <li><a href="{% url 'event_mail_participants' event.id %}">Send epost til deltakere</a></li>
@@ -144,10 +144,16 @@
                                         {% else %}
                                             <p class="status-text">Du er meldt på dette arrangementet.</p>
                                         {% endif %}
+                                        {% if attendance_event.extras.all %}
+                                          {% if attendance_event.registration_end > now or attendance_event.unattend_deadline > now %}
+                                            {% include 'events/extras.html' %}
+                                          {% else %}
+                                            <p class="status-text">Valgt extra: {{ attendee.extras }}</p>
+                                          {% endif %}
+                                        {% endif %}
                                         {% if user_paid %}
                                             {% if attendance_event.unattend_deadline > now %}
                                                 {% if event.event_start > now %}
-                                                    {% include 'events/extras.html' %}
                                                     {% if payment_relation_id %}
                                                         <div class="action">
                                                             <a href="#refund" role="button" class="btn btn-large btn-danger" data-toggle="modal">Refunder og meld meg av</a>
@@ -167,7 +173,6 @@
                                         {% if not user_paid %}
                                             {% if attendance_event.unattend_deadline > now or place_on_wait_list %}
                                                 {% if event.event_start > now %}
-                                                    {% include 'events/extras.html' %}
                                                     <div class="action"><a href="#unattend" role="button" class="btn btn-large btn-danger" data-toggle="modal">Meld meg av</a></div>
                                                 {% endif %}
                                             {% endif %}
@@ -218,15 +223,19 @@
                                                 </div>
                                             {% endif %}
                                         {% endif %}
+
+                                        {%  if payment %}
+                                            <p class="status-text status-price">Pris: {{ payment.price.price }},-</p>
+                                        {%  endif %}
+
                                     {% endif %}
                                 {% endif %}
                             {% else %}
                                 <p class="status-text">Dette er ikke et påmeldingsarrangement.</p>
                             {% endif %}
 
-
                             {% if attendance_event %}
-                                <p class="help-text" style="margin-top:20px">Avmeldingsfristen 
+                                <p class="help-text">Avmeldingsfristen
                                     {% if attendance_event.unattend_deadline > now %}
                                         er
                                     {% else %}

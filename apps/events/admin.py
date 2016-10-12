@@ -1,24 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib import admin, messages
-from django.core import validators
 from django.utils.translation import ugettext as _
-
-from apps.events.models import Event
-from apps.events.models import AttendanceEvent
-from apps.events.models import Attendee
-from apps.events.models import CompanyEvent
-from apps.events.models import RuleBundle
-from apps.events.models import FieldOfStudyRule
-from apps.events.models import GradeRule
-from apps.events.models import UserGroupRule
-from apps.events.models import Reservation
-from apps.events.models import Reservee
-from apps.events.models import Extras
-from apps.events.models import GroupRestriction
-from apps.feedback.admin import FeedbackRelationInline
-
 from reversion.admin import VersionAdmin
+
+from apps.events.models import (AttendanceEvent, Attendee, CompanyEvent, Event, Extras,
+                                FieldOfStudyRule, GradeRule, GroupRestriction, Reservation,
+                                Reservee, RuleBundle, UserGroupRule)
+from apps.feedback.admin import FeedbackRelationInline
 
 
 class AttendeeInline(admin.TabularInline):
@@ -84,7 +73,7 @@ mark_not_attended.short_description = "Merk som ikke møtt"
 class AttendeeAdmin(VersionAdmin):
     model = Attendee
     list_display = ('user', 'event', 'paid', 'attended', 'note', 'extras')
-    list_filter = ('event__event__title',)
+    list_filter = ('event__event',)
     actions = [mark_paid, mark_attended, mark_not_paid, mark_not_attended]
 
     # Disable delete_selected http://bit.ly/1o4nleN
@@ -165,13 +154,6 @@ class EventAdmin(VersionAdmin):
         for instance in instances:
             instance.save()
         formset.save_m2m()
-
-    def get_form(self, request, obj=None, **kwargs):
-        form = super(EventAdmin, self).get_form(request, obj, **kwargs)
-        form.base_fields['ingress_short'].validators = [validators.MinLengthValidator(50)]
-        form.base_fields['ingress'].validators = [validators.MinLengthValidator(75)]
-        form.base_fields['description'].validators = [validators.MinLengthValidator(140)]
-        return form
 
 
 class ReserveeInline(admin.TabularInline):

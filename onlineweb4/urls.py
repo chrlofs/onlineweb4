@@ -8,6 +8,7 @@ from django.views.generic import TemplateView
 from django_nyt.urls import get_pattern as get_notify_pattern
 from filebrowser.sites import site
 from wiki.urls import get_pattern as get_wiki_pattern
+from onlineweb4 import views
 
 # URL config
 admin.autodiscover()
@@ -85,6 +86,7 @@ if 'apps.companyprofile' in settings.INSTALLED_APPS:
 if 'apps.dashboard' in settings.INSTALLED_APPS:
     urlpatterns += [
         url(r'^dashboard/',         include('apps.dashboard.urls')),
+        url(r'^dashboard/chunks/', include('apps.dashboard.chunks.dashboard.urls', namespace='chunk-dashboard')),
     ]
 
 if 'apps.events' in settings.INSTALLED_APPS:
@@ -96,6 +98,31 @@ if 'apps.events' in settings.INSTALLED_APPS:
 if 'apps.feedback' in settings.INSTALLED_APPS:
     urlpatterns += [
         url(r'^feedback/',          include('apps.feedback.urls')),
+    ]
+
+if 'apps.gallery' in settings.INSTALLED_APPS:
+    urlpatterns += [
+        url(
+            r'^gallery/',
+            include(
+                'apps.gallery.urls',
+                namespace='gallery',
+                app_name='gallery'
+            )
+        ),
+        url(
+            r'^dashboard/gallery/',
+            include(
+                'apps.gallery.dashboard.urls',
+                namespace='gallery_dashboard',
+                app_name='gallery'
+            )
+        )
+    ]
+
+if 'apps.genfors' in settings.INSTALLED_APPS:
+    urlpatterns += [
+        url(r'^genfors/',           include('apps.genfors.urls')),
     ]
 
 if 'apps.marks' in settings.INSTALLED_APPS:
@@ -134,30 +161,18 @@ if 'apps.resourcecenter' in settings.INSTALLED_APPS and 'apps.mailinglists' in s
         url(r'^resourcecenter/',    include('apps.resourcecenter.urls')),  # Resourcecenter has catch-all on subpages
     ]
 
-if 'apps.genfors' in settings.INSTALLED_APPS:
+if 'apps.rutinator' in settings.INSTALLED_APPS:
     urlpatterns += [
-        url(r'^genfors/',           include('apps.genfors.urls')),
+        url(r'^dashboard/rutinator/', include(
+            'apps.rutinator.dashboard.urls',
+            namespace='dashboard',
+            app_name='rutinator'
+        )),
     ]
 
-
-if 'apps.gallery' in settings.INSTALLED_APPS:
+if 'apps.slack' in settings.INSTALLED_APPS:
     urlpatterns += [
-        url(
-            r'^gallery/',
-            include(
-                'apps.gallery.urls',
-                namespace='gallery',
-                app_name='gallery'
-            )
-        ),
-        url(
-            r'^dashboard/gallery/',
-            include(
-                'apps.gallery.dashboard.urls',
-                namespace='gallery_dashboard',
-                app_name='gallery'
-            )
-        )
+        url(r'^slack/', include('apps.slack.urls'))
     ]
 
 if 'apps.rutinator' in settings.INSTALLED_APPS:
@@ -168,6 +183,7 @@ if 'apps.rutinator' in settings.INSTALLED_APPS:
 if 'apps.splash' in settings.INSTALLED_APPS:
     urlpatterns += [
         url(r'^splash/',           include('apps.splash.urls')),
+        url(r'^splash/',           include('apps.splash.api.urls')),
     ]
 
 if 'apps.sso' in settings.INSTALLED_APPS:
@@ -179,7 +195,11 @@ if 'apps.sso' in settings.INSTALLED_APPS:
 if 'apps.webshop' in settings.INSTALLED_APPS:
     urlpatterns += [
         url(r'^webshop/',           include('apps.webshop.urls')),
-        url(r'^dashboard/webshop/', include('apps.webshop.dashboard.urls', namespace='dashboard-webshop', app_name='webshop')),
+        url(r'^dashboard/webshop/', include(
+            'apps.webshop.dashboard.urls',
+            namespace='dashboard-webshop',
+            app_name='webshop'
+        )),
     ]
 
 # feedme
@@ -213,6 +233,8 @@ if 'rest_framework' in settings.INSTALLED_APPS:
         url(r'^api/v1/', include(api_urls()))
     ]
 
+#500 view
+handler500 = views.server_error
 
 # http://docs.djangoproject.com/en/1.3/howto/static-files/#staticfiles-development
 if settings.DEBUG:
@@ -220,5 +242,5 @@ if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     # 500
     urlpatterns += [
-        url(r'^500/$', server_error),
+        url(r'^500/$', views.server_error),
     ]

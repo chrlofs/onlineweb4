@@ -8,12 +8,10 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext as _
+from rest_framework.exceptions import NotAcceptable
 
 from apps.events.models import AttendanceEvent, Attendee
 from apps.marks.models import Suspension
-
-from rest_framework.exceptions import NotAcceptable
-
 
 User = settings.AUTH_USER_MODEL
 
@@ -26,8 +24,13 @@ class Payment(models.Model):
         (3, _('Utsettelse')),
     )
 
-    # creates tuples used as key choices.
-    STRIPE_KEY_CHOICES = zip(settings.STRIPE_PUBLIC_KEYS.keys(), settings.STRIPE_PUBLIC_KEYS.keys())
+    # Make sure these exist in settings if they are to be used.
+    STRIPE_KEY_CHOICES = (
+        ('arrkom', 'arrkom'),
+        ('prokom', 'prokom'),
+        ('trikom', 'trikom'),
+        ('fagkom', 'fagkom'),
+    )
 
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
@@ -138,6 +141,10 @@ class Payment(models.Model):
     def prices(self):
         return self.paymentprice_set.all()
 
+    def price(self):
+        # TODO implement group based pricing
+        return self.paymentprice_set.all()[0]
+
     def _is_type(self, model_type):
         return ContentType.objects.get_for_model(model_type) == self.content_type
 
@@ -157,7 +164,7 @@ class PaymentPrice(models.Model):
     description = models.CharField(max_length=128, null=True, blank=True)
 
     def __str__(self):
-        return str(self.price)
+        return self.description + " (" + str(self.price) + "kr)"
 
     class Meta(object):
         verbose_name = _("pris")

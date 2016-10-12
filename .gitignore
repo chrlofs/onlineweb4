@@ -1,6 +1,7 @@
 .ropeproject/
 *.pyc
 *.swp
+*.cache
 *.project
 *.settings
 *.pydevproject
@@ -37,3 +38,4 @@ node_modules/*
 coverage
 coverage.xml
 setuptools-*.zip
+drone-secrets.yml

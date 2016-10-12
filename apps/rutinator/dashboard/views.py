@@ -24,4 +24,3 @@ class EditTaskView(DashboardMixin, UpdateView):
     form_class = NewTaskForm
     template_name = 'rutinator/dashboard/edit.html'
     success_url = reverse_lazy('dashboard:task_view')
-
