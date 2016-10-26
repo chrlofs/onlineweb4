@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.db import models
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import Group
 
 import random
 
@@ -27,13 +27,11 @@ class Task(models.Model):
     ), blank=True, null=True)
     group = models.ForeignKey(Group, blank=False, null=True, verbose_name='Ansvarlig gruppe')
     user = models.ForeignKey(User, blank=True, null=True, verbose_name='Ansvarlig person')
-    choose_random = models.BooleanField()
+    choose_random = models.BooleanField(default=False, blank=True)
     task_type = models.SmallIntegerField((u'Type'), choices=TYPE_CHOICES, default=1)
-
 
     def random_from_group(self):
         user = random.choice(self.group.user_set.all())
-
 
 
     # send mail (see mommy)

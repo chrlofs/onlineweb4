@@ -1,0 +1,7 @@
+Dette er en automatisk paminnelse sent til {{ email }}.
+
+Brukernavn: {{ username }}
+
+Oppgave: {{ task.title }}
+Beksrivelse: {{ task.description }}
+

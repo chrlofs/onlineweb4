@@ -18,7 +18,6 @@ class NewTaskForm(forms.ModelForm):
             self.fields['assigned_to'].label_from_instance = \
                 lambda obj: "%s (%s)" % (obj.get_full_name(), obj.username)
 
-
         due_date = forms.DateField(
             required=False,
             widget=forms.DateTimeInput(attrs={'class': 'due_date_picker'})
@@ -31,7 +30,8 @@ class NewTaskForm(forms.ModelForm):
             'group',
             'user',
             'task_type',
-            'deadline'
+            'deadline',
+            'choose_random'
         )
 
         test = [('deadline', {'placeholder': 'Velg ...'})]
