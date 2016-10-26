@@ -175,14 +175,13 @@ if 'apps.slack' in settings.INSTALLED_APPS:
         url(r'^slack/', include('apps.slack.urls'))
     ]
 
-<<<<<<< HEAD
+
 if 'apps.rutinator' in settings.INSTALLED_APPS:
     urlpatterns += [
         url(r'^dashboard/rutinator/', include('apps.rutinator.dashboard.urls', namespace='dashboard', app_name='rutinator')),
     ]
 
-=======
->>>>>>> 4679cfe7942eb181b8ce20f96cb201573d0e91f5
+
 if 'apps.splash' in settings.INSTALLED_APPS:
     urlpatterns += [
         url(r'^splash/',           include('apps.splash.urls')),
