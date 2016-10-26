@@ -161,14 +161,6 @@ if 'apps.resourcecenter' in settings.INSTALLED_APPS and 'apps.mailinglists' in s
         url(r'^resourcecenter/',    include('apps.resourcecenter.urls')),  # Resourcecenter has catch-all on subpages
     ]
 
-if 'apps.rutinator' in settings.INSTALLED_APPS:
-    urlpatterns += [
-        url(r'^dashboard/rutinator/', include(
-            'apps.rutinator.dashboard.urls',
-            namespace='dashboard',
-            app_name='rutinator'
-        )),
-    ]
 
 if 'apps.slack' in settings.INSTALLED_APPS:
     urlpatterns += [
@@ -177,7 +169,7 @@ if 'apps.slack' in settings.INSTALLED_APPS:
 
 if 'apps.rutinator' in settings.INSTALLED_APPS:
     urlpatterns += [
-        url(r'^dashboard/rutinator/', include('apps.rutinator.dashboard.urls', namespace='dashboard', app_name='rutinator')),
+        url(r'^dashboard/rutinator/', include('apps.rutinator.dashboard.urls', namespace='rutinator')),
     ]
 
 if 'apps.splash' in settings.INSTALLED_APPS:

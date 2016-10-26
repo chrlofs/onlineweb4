@@ -11,7 +11,7 @@
 {% block content %}
     <div class="row">
         <div class="col-md-12">
-            <a href="{% url 'dashboard:task_create' %}" class="btn btn-primary"><i class="fa fa-plus"></i> Nytt oppdrag</a>
+            <a href="{% url 'rutinator:task_create' %}" class="btn btn-primary"><i class="fa fa-plus"></i> Nytt oppdrag</a>
         </div>
     </div>
     <br />
@@ -31,7 +31,7 @@
                 <tbody>
                 {% for task in tasks %}
                     <tr>
-                        <td><a href="{% url 'dashboard:task_edit' pk=task.id %}">{{ task.title }}</a></td>
+                        <td><a href="{% url 'rutinator:task_edit' pk=task.id %}">{{ task.title }}</a></td>
                         <td>{{ task.user }}</td>
                         <td>{{ task.deadline|date:'Y-m-d' }}</td>
                         <td>{{ task.get_task_type_display }}</td>
