@@ -1,6 +1,6 @@
 import Tag from '../components/Tag';
 
-class TagsContainer extends React.Component {
+class TagContainer extends React.Component {
   constructor(props) {
     super();
 
@@ -13,7 +13,7 @@ class TagsContainer extends React.Component {
         this.state.selectedTags[key] = false;
       }
     }
-
+    
     // Store a copy of the initial store for use with resetting.
     this.initialState = Object.assign({}, this.state)
 
@@ -48,12 +48,14 @@ class TagsContainer extends React.Component {
     }.bind(this));
 
     return (
-      <ul>
-        {tags}
-        <button onClick={this.handleReset}>reset</button>
-      </ul>
+      <div>
+        <h3>{this.props.heading}</h3>
+        <ul>
+          {tags}
+        </ul>
+      </div>
     );
   }
 }
 
-export default TagsContainer;
+export default TagContainer;
