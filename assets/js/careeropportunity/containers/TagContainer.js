@@ -13,7 +13,7 @@ class TagContainer extends React.Component {
         this.state.selectedTags[key] = false;
       }
     }
-    
+
     // Store a copy of the initial store for use with resetting.
     this.initialState = Object.assign({}, this.state)
 
