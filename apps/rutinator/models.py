@@ -32,6 +32,7 @@ class Task(models.Model):
 
     def random_from_group(self):
         user = random.choice(self.group.user_set.all())
+        
 
 
     # send mail (see mommy)

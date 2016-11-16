@@ -18,6 +18,11 @@ class CreateTaskView(DashboardMixin, CreateView):
     template_name = 'rutinator/dashboard/create.html'
     success_url = reverse_lazy('rutinator:task_view')
 
+    def form_valid(self, form):
+        if form.instance.choose_random:
+            form.instance.random_from_group()
+        return super(AuthorCreate, self).form_valid(form)
+
 
 class EditTaskView(DashboardMixin, UpdateView):
     model = Task
