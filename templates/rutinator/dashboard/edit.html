@@ -1,18 +1,51 @@
 {% extends 'dashboard_base.html' %}
 {% load addcss %}
+{% load crispy_forms_field %}
 
 {% block content %}
 
 
 <form action="" method="POST">
+
 {% csrf_token %}
 {% for field in form %}
 <label for = '{{ field.auto_id }}'>{{field.label}}</label>
     <div>
+        {% if not field|is_checkbox %}
         {{ field|addclass:'form-control' }}
+        {% else %}
+        {{field}}
+        {% endif %}
+        {{ field.errors }}
     </div>
 {% endfor %}
 <br>
 <button class="btn btn-success">Oppdater</button>
+<a href="#modal-delete-task" data-toggle="modal" class="btn btn-danger col-sm-4">Slett</a>
 </form>
+
+<div id="modal-delete-task" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3>Bekreft sletting av oppgave</h3>
+            </div>
+            <div class="modal-body">
+                <p>Er du sikker på at du vil slette {{ task.title }}?</p>
+            </div>
+            <div class="modal-footer">
+                <form action="{% url 'rutinator:task_delete' pk=task.id %}" method="POST">
+                    {% csrf_token %}
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-danger">Slett</button>
+                        <button class="btn" data-dismiss="modal" aria-hidden="true">Lukk</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
+

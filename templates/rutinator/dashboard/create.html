@@ -1,13 +1,21 @@
 {% extends 'dashboard_base.html' %}
 {% load addcss %}
+{% load crispy_forms_field %}
 
 {% block content %}
 <form action="" method="POST">{% csrf_token %}
 
     {% for field in form %}
         <label for = '{{ field.auto_id }}'>{{field.label}}</label>
-        <div> {{ field|addclass:'form-control' }} </div>
-{% endfor %}
+        <div>
+            {% if not field|is_checkbox %}
+            {{ field|addclass:'form-control' }}
+            {% else %}
+            {{field}}
+            {% endif %}
+        </div>
+        {{ field.errors }}
+    {% endfor %}
     <br>
 
     <button class="btn btn-success">Legg til</button>

@@ -31,11 +31,7 @@ class Task(models.Model):
     task_type = models.SmallIntegerField((u'Type'), choices=TYPE_CHOICES, default=1)
 
     def random_from_group(self):
-        user = random.choice(self.group.user_set.all())
-        
-
-
-    # send mail (see mommy)
+        return random.choice(self.group.user_set.all())
 
 
     def __unicode__(self):
