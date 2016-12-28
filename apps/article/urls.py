@@ -2,7 +2,7 @@
 
 from django.conf.urls import url
 
-from apps.api.utils import SharedAPIRootRouter
+from apps.api.utils import APIVersionOneRouter
 from apps.article import views
 
 urlpatterns = [
@@ -13,5 +13,5 @@ urlpatterns = [
     url(r'^year/(?P<year>\d+)/month/(?P<month>[^\.]+)/$', views.archive_month, name='article_archive_month'),
 ]
 
-router = SharedAPIRootRouter()
+router = APIVersionOneRouter()
 router.register(r'articles', views.ArticleViewSet)

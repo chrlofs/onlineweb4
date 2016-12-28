@@ -1,7 +1,7 @@
-from apps.api.utils import SharedAPIRootRouter
+from apps.api.utils import APIVersionOneRouter
 from apps.slack import views
 
 urlpatterns = []
 
-router = SharedAPIRootRouter()
+router = APIVersionOneRouter()
 router.register('slack', views.InviteViewSet, base_name='slack')

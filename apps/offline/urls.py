@@ -2,7 +2,7 @@
 
 from django.conf.urls import url
 
-from apps.api.utils import SharedAPIRootRouter
+from apps.api.utils import APIVersionOneRouter
 from apps.offline import views
 
 # API v1
@@ -10,5 +10,5 @@ urlpatterns = [
     url(r'^$', views.main, name='offline')
 ]
 
-router = SharedAPIRootRouter()
+router = APIVersionOneRouter()
 router.register('offline', views.OfflineIssueViewSet)

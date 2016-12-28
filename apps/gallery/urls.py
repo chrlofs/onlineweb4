@@ -2,7 +2,7 @@
 
 from django.conf.urls import url
 
-from apps.api.utils import SharedAPIRootRouter
+from apps.api.utils import APIVersionOneRouter
 from apps.gallery import views
 from apps.gallery.views import CropView, PresetView
 
@@ -17,5 +17,5 @@ urlpatterns = [
 
 # API v1
 
-router = SharedAPIRootRouter()
+router = APIVersionOneRouter()
 router.register(r'images', views.ResponsiveImageViewSet)

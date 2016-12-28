@@ -2,7 +2,7 @@
 
 from django.conf.urls import url
 
-from apps.api.utils import SharedAPIRootRouter
+from apps.api.utils import APIVersionOneRouter
 from apps.authentication import views
 
 urlpatterns = [
@@ -15,5 +15,5 @@ urlpatterns = [
 ]
 
 # API v1
-router = SharedAPIRootRouter()
+router = APIVersionOneRouter()
 router.register('users', views.UserViewSet, base_name='users')

@@ -1,3 +1,4 @@
+from copy import deepcopy
 from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
@@ -222,17 +223,18 @@ if 'redwine' in settings.INSTALLED_APPS:
     ]
 
 if 'rest_framework' in settings.INSTALLED_APPS:
-    from apps.api.utils import SharedAPIRootRouter
+    from apps.api.utils import APIVersionOneRouter, APIVersionTwoRouter, inherit_version_routes
 
     # API
-    def api_urls():
-        return SharedAPIRootRouter.shared_router.urls
+    v1_urls = APIVersionOneRouter.shared_router.urls
+    v2_urls = inherit_version_routes(APIVersionOneRouter, APIVersionTwoRouter)
 
     urlpatterns += [
-        url(r'^api/v1/', include(api_urls()))
+        url(r'^api/v1/', include(v1_urls, namespace="v1")),
+        url(r'^api/v2/', include(v2_urls, namespace="v2")),
     ]
 
-#500 view
+# 500 view
 handler500 = views.server_error
 
 # http://docs.djangoproject.com/en/1.3/howto/static-files/#staticfiles-development
