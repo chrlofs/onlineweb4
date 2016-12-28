@@ -230,8 +230,8 @@ if 'rest_framework' in settings.INSTALLED_APPS:
     v2_urls = inherit_version_routes(APIVersionOneRouter, APIVersionTwoRouter)
 
     urlpatterns += [
-        url(r'^api/v1/', include(v1_urls, namespace="v1")),
-        url(r'^api/v2/', include(v2_urls, namespace="v2")),
+        url(r'^api/v1/', include(v1_urls, namespace="APIv1")),
+        url(r'^api/v2/', include(v2_urls, namespace="APIv2")),
     ]
 
 # 500 view

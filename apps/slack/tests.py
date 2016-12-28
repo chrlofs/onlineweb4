@@ -69,7 +69,7 @@ class SlackInviteTest(TestCase):
 class InviteViewSetTest(APITestCase):
     @patch('apps.slack.views.SlackInvite')
     def test_post_withEmail_returnsOk(self, slack_mock):
-        url = reverse('slack-list')
+        url = reverse('APIv1:slack-list')
         email = 'test@example.com'
 
         response = self.client.post(url, {'email': email})
@@ -80,7 +80,7 @@ class InviteViewSetTest(APITestCase):
     @patch('apps.slack.views.SlackInvite.invite')
     def test_post_withSlackError_fails(self, slack_mock):
         slack_mock.side_effect = SlackException('Error')
-        url = reverse('slack-list')
+        url = reverse('APIv1:slack-list')
         email = 'email@example.com'
 
         response = self.client.post(url, {'email': email})

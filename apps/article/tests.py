@@ -91,14 +91,14 @@ class ArticleURLTestCase(TestCase):
 
 class ArticleAPIURLTestCase(APITestCase):
     def test_article_list_empty(self):
-        url = reverse('article-list')
+        url = reverse('APIv1:article-list')
 
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_article_list_exists(self):
-        url = reverse('article-list')
+        url = reverse('APIv1:article-list')
 
         G(Article)
 
@@ -111,7 +111,7 @@ class ArticleAPIURLTestCase(APITestCase):
 
         article = G(Article, created_date=in_the_past, published_date=in_the_past)
 
-        url = reverse('article-detail', args=(article.id,))
+        url = reverse('APIv1:article-detail', args=(article.id,))
 
         response = self.client.get(url)
 

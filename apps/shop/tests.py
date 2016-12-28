@@ -8,7 +8,7 @@ from apps.inventory.models import Item
 
 class ShopAPIURLTestCase(APITestCase):
     def test_item_list_empty(self):
-        url = reverse('item-list')
+        url = reverse('APIv1:item-list')
 
         response = self.client.get(url)
 
@@ -16,7 +16,7 @@ class ShopAPIURLTestCase(APITestCase):
 
     def test_item_list_exists(self):
         G(Item, available=True)
-        url = reverse('item-list')
+        url = reverse('APIv1:item-list')
 
         response = self.client.get(url)
 
@@ -24,7 +24,7 @@ class ShopAPIURLTestCase(APITestCase):
 
     def test_item_detail(self):
         item = G(Item, available=True)
-        url = reverse('item-detail', args=(item.id,))
+        url = reverse('APIv1:item-detail', args=(item.id,))
 
         response = self.client.get(url)
 

@@ -28,7 +28,7 @@ class SplashURLTestCase(APITestCase):
 
 class SplashAPIURLTestCase(APITestCase):
     def test_splash_events_list_no_events(self):
-        url = reverse('splashevent-list')
+        url = reverse('APIv1:splashevent-list')
 
         response = self.client.get(url)
 
@@ -36,7 +36,7 @@ class SplashAPIURLTestCase(APITestCase):
 
     def test_splash_events_list_with_events_exist(self):
         G(SplashEvent)
-        url = reverse('splashevent-list')
+        url = reverse('APIv1:splashevent-list')
 
         response = self.client.get(url)
 
@@ -49,7 +49,7 @@ class SplashAPIURLTestCase(APITestCase):
         G(SplashEvent, start_time=last_week, end_time=last_week)
         next_week_event = G(SplashEvent, start_time=next_week, end_time=next_week)
 
-        url = reverse('splashevent-list')
+        url = reverse('APIv1:splashevent-list')
 
         url += '?start_time__gte=%s' % datetime.datetime.now()
 

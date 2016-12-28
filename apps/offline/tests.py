@@ -61,7 +61,7 @@ class OfflineURLTestCase(TestCase):
 
 class OfflineAPIURLTestCase(APITestCase):
     def test_offline_list_empty(self):
-        url = reverse('issue-list')
+        url = reverse('APIv1:issue-list')
 
         response = self.client.get(url)
 
@@ -70,7 +70,7 @@ class OfflineAPIURLTestCase(APITestCase):
     def test_offline_list_exists(self):
         create_generic_offline_issue()
 
-        url = reverse('issue-list')
+        url = reverse('APIv1:issue-list')
 
         response = self.client.get(url)
 
@@ -78,7 +78,7 @@ class OfflineAPIURLTestCase(APITestCase):
 
     def test_offline_detail(self):
         issue = create_generic_offline_issue()
-        url = reverse('issue-detail', args=(issue.id,))
+        url = reverse('APIv1:issue-detail', args=(issue.id,))
 
         response = self.client.get(url)
 

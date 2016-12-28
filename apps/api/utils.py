@@ -37,5 +37,3 @@ def inherit_version_routes(previous_router, new_router):
     new_routes.extend(new_router.shared_router.urls)
 
     return new_routes
-
-

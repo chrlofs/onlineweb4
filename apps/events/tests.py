@@ -501,7 +501,7 @@ class EventsURLTestCase(TestCase):
 
 class EventsAPIURLTestCase(APITestCase):
     def test_events_list_empty(self):
-        url = reverse('events-list')
+        url = reverse('APIv1:events-list')
 
         response = self.client.get(url)
 
@@ -509,7 +509,7 @@ class EventsAPIURLTestCase(APITestCase):
 
     def test_events_list_exists(self):
         create_generic_event()
-        url = reverse('events-list')
+        url = reverse('APIv1:events-list')
 
         response = self.client.get(url)
 
@@ -517,7 +517,7 @@ class EventsAPIURLTestCase(APITestCase):
 
     def test_events_detail(self):
         event = create_generic_event()
-        url = reverse('events-detail', args=(event.id,))
+        url = reverse('APIv1:events-detail', args=(event.id,))
 
         response = self.client.get(url)
 
