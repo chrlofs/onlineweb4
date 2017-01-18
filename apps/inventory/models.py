@@ -15,6 +15,9 @@ class ItemCategory(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta(object):
+        default_permissions = ('add', 'change', 'delete', 'view')
+
 
 class Item(models.Model):
 
