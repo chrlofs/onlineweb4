@@ -21,7 +21,7 @@ class OfflineContainer extends Component {
   fetchOfflines() {
     const apiUrl = this.API_URL;
     fetch(apiUrl, { credentials: 'same-origin' })
-    .then((response) => response.json())
+    .then(response => response.json())
     .then((json) => {
       this.setState({
         offlines: json.results.map(apiOfflineToOffline),
@@ -38,4 +38,4 @@ class OfflineContainer extends Component {
   }
 }
 
-export default ArticlesContainer;
+export default OfflineContainer;

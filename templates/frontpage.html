@@ -18,6 +18,7 @@
 
     {% render_bundle 'frontpageEvents' %}
     {% render_bundle 'frontpageArticles' %}
+    {% render_bundle 'frontpageOfflines' %}
 {% endblock %}
 
 {% block apple-webapp %}
@@ -89,37 +90,7 @@
 
     <section id="offline">
         <div class="container">
-            <div class="page-header clearfix">
-                <div class="row">
-                    <div class="col-md-8 col-xs-6">
-                        <h1 id="offline-heading">Offline</h1>
-                    </div>
-                    <div class="col-md-4 col-xs-6 archive-link">
-                        <a href="{% url 'offline' %}">ARKIV
-                            <i class="glyphicon glyphicon-chevron-right"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="ingress">
-{% filter markdown %}
-{% chunk "offline_ingress" %}
-{% endfilter %}
-                    </div>
-{% filter markdown %}
-{% chunk "offline_brodtekst" %}
-{% endfilter %}
-                </div>
-                <div class="col-md-6">
-                    <div id="offlineCarousel" class="carousel slide" data-prefix="{{ MEDIA_URL }}">
-                        <div class="carousel-inner"></div>
-                        <a class="carousel-control left" href="#offlineCarousel" data-slide="prev"><span class="glyphicon glyphicon-chevron-left"></span></a>
-                        <a class="carousel-control right" href="#offlineCarousel" data-slide="next"><span class="glyphicon glyphicon-chevron-right"></span></a>
-                    </div>
-                </div>
-            </div>
+            <h1 id='offline-items'></div>
         </div>
     </section>
 

@@ -18,6 +18,9 @@ module.exports = {
     ],
     frontpageArticles: [
       './assets/js/frontpage/articles/index'
+    ],
+    frontpageOfflines: [
+      './assets/js/frontpage/offline/index'
     ]
   },
   resolve: {
