@@ -106,7 +106,7 @@ section#careeropportunity {
         margin-top: 15px;
         padding-left: 15px;
         padding-right: 15px;
-        padding-bottom: 10px;
+        /*padding-bottom: 10px;*/
         box-sizing: border-box;
 		color:white;
 		background:@baby-blue-medium;
@@ -116,10 +116,15 @@ section#careeropportunity {
 			font-size:19px;
 		}
 
-		.company-ingress p {
-			color:white;
-			font-weight:300;
-			font-size:14px;
+		.company-ingress p{
+            font-size:14px;
+            color:white;
+    		font-weight:300;
+            font-color:white;
+
+            a{
+                font-color:white;
+            }
 		}
 
 		.company-image-caption {
@@ -128,6 +133,23 @@ section#careeropportunity {
 			color:white;
 			text-transform: uppercase;
 		}
+
+        .panel-default{
+            margin-bottom: 0px;
+            background-color: @baby-blue-medium;
+            border-radius: 0px;
+            border-color: @baby-blue-medium;
+
+            .panel-heading{
+                background-color: @baby-blue;
+                border-radius: 0px;
+                border-color: @baby-blue;
+            }
+
+            .panel-body{
+                background-color: @baby-blue-medium;
+            }
+        }
 
 		a:hover {
 			text-decoration: none;

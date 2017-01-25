@@ -56,55 +56,47 @@
                         </div>
                         <div class="row">
                             <div class="col-md-12">
-                                <div class="company-ingress"> Frist.. {{opportunity.deadline}} </div>
-                                <div class="company-ingress"> Website.. <a href="{{opportunity.company.site}}">{{opportunity.company.site}}</a> </div>
-                                <div class="company-ingress"> Telefon.. {{opportunity.company.phone_number}} </div>
-                                <div class="company-ingress"> Mail.. {{opportunity.company.email_address}} </div>
-                                <p class="pull-right company-image-caption">Trykk for mer info</p>
+                                <div class="company-ingress"><p><i class="glyphicon glyphicon-time"></i> {{opportunity.deadline}} </div>
+                                <div class="company-ingress"><p><i class="glyphicon glyphicon-globe"></i> <a href="{{opportunity.company.site}}">{{ opportunity.company.site }}</a></p> </div>
+                                <div class="company-ingress"><p><i class="glyphicon glyphicon-phone-alt"></i> {{opportunity.company.phone_number}} </p></div>
+                                <div class="company-ingress"><p><i class="glyphicon glyphicon-envelope"></i> <a href="mailto:{{ opportunity.company.email_address }}"> {{ opportunity.company.email_address }}</a></p></div>
+                                <p class="pull-right company-image-caption"><a href="{{ company }}">Trykk for mer info<a></p>
                             </div>
                         </div>
                 </div><!-- End company style wrapper -->
-                <div class="company" id="collapse_controller">
-                    <div class="collapse_container">
-                        <h3>
-                            <a type="button" data-toggle="collapse" data-parent="#collaps_controller" href="#krav">
-                                Krav
-                            </a>
-                        </h3>
-                        <div id="krav" class="collapsed collapse">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <h3>{{ opportunity.company.name }} vil ha en som...</h3>
+                <div class="company">
+                    <div class="row">
+                        <div id="Accordian" class="accordion-group">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">
+                                        <a data-toggle="collapse" data-parent="#Accordian" href="#collapseContact">Krav</a>
+                                    </h3>
+                                </div>
+                                <div id="collapseContact" class="panel-collapse collapse in">
+                                    <div class="panel-body">
+                                        <h4>{{ opportunity.company.name }} vil ha en som...</h4>
+                                        <ul>
+                                            <li>Er levende</li>
+                                            <li>Kan puste</li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <ul>
-                                        <li>Er levende</li>
-                                        <li>Kan puste</li>
-                                    </ul>
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">
+                                        <a data-toggle="collapse" data-parent="#Accordian"  href="#collapseProposal">Tilbud</a>
+                                    </h3>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="hade">
-                        <h3>
-                            <a type="button" data-toggle="collapse" data-parent="#collaps_controller" href="#tilbud">
-                                Tilbud
-                            </a>
-                        </h3>
-                        <div id="tilbud" class="collapsed collapse">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <h3>{{ opportunity.company.name }} tilbyr deg...</h3>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <ul>
-                                        <li>Jobb</li>
-                                        <li>Mindre fritid</li>
-                                    </ul>
+                                <div id="collapseProposal" class="panel-collapse collapse">
+                                    <div class="panel-body">
+                                        <h4>{{ opportunity.company.name }} tilbyr deg...</h4>
+                                        <ul>
+                                            <li>Jobb</li>
+                                            <li>Mindre fritid</li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
