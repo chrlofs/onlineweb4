@@ -1,5 +1,8 @@
 # Create your views here.
-from django.http import Http404, HttpResponse
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
 
+@login_required
 def index(request):
-	return HttpResponse("Hello World")
+    context = {}
+    return render(request, 'meetapp/index.html', context)
