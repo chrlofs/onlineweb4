@@ -251,6 +251,7 @@ INSTALLED_APPS = (
     'apps.gallery',
     'apps.events',
     'apps.marks',
+    'apps.meetapp',
     'apps.offline',
     'apps.feedback',
     'apps.mommy',

@@ -144,6 +144,11 @@ if 'apps.shop' in settings.INSTALLED_APPS:
         url(r'^shop/',          include('apps.shop.urls')),
     ]
 
+if 'apps.meetapp' in settings.INSTALLED_APPS:
+    urlpatterns += [
+        url(r'^meetapp/',           include('apps.meetapp.urls')),
+    ]
+
 if 'apps.offline' in settings.INSTALLED_APPS:
     urlpatterns += [
         url(r'^offline/',           include('apps.offline.urls')),
