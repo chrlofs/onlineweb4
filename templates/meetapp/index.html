@@ -22,10 +22,10 @@ Møteagenda - Online
                             <a href="{% url 'meetapp_active' 'agenda' %}" data-section="agenda">Agenda</a>
                         </li>
                         <li class="{% ifequal 'feedme' active_tab %}active{% endifequal %}">
-                            <a href="{% url 'meetapp_active' 'feedme' %}" data-section="edit">Feedme</a>
+                            <a href="{% url 'meetapp_active' 'feedme' %}" data-section="feedme">Feedme</a>
                         </li>
                         <li class="{% ifequal 'fravaer' active_tab %}active{% endifequal %}">
-                            <a href="{% url 'meetapp_active' 'fravaer' %}" data-section="saldo">Fravær</a>
+                            <a href="{% url 'meetapp_active' 'fravaer' %}" data-section="fravaer">Fravær</a>
                         </li>
                     </ul>
                 </div>
@@ -34,10 +34,10 @@ Møteagenda - Online
                         <section id="agenda">
                             {% include "meetapp/agenda.html" %}
                         </section>
-                        <section id="edit">
+                        <section id="feedme">
                             {% include "meetapp/feedme.html" %}
                         </section>
-                        <section id="saldo">
+                        <section id="fravaer">
                             {% include "meetapp/fravaer.html" %}
                         </section>
                     </div>
