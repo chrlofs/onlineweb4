@@ -1,9 +1,9 @@
 {% extends "base.html" %}
+{% load render_bundle from webpack_loader %}
 
 {% block title %}
 Møteagenda - Online
 {% endblock title %}
-
 
 {% block content %}
     <section id="meetapp">
@@ -17,24 +17,38 @@ Møteagenda - Online
             </div>
             <div class="row">
                 <div class="col-md-2 col-sm-3 col-xs-12">
-                    <ul class="nav nav-pills nav-stacked" id="profile-tabs">
-                        <li>
-                            <a href="">Agenda</a>
+                    <ul class="nav nav-pills nav-stacked" id="meetapp-tabs">
+                        <li class="{% ifequal 'agenda' active_tab %}active{% endifequal %}">
+                            <a href="{% url 'meetapp_active' 'agenda' %}" data-section="agenda">Agenda</a>
                         </li>
-
-                        <li>
-                            <a href="">Feedme</a>
+                        <li class="{% ifequal 'feedme' active_tab %}active{% endifequal %}">
+                            <a href="{% url 'meetapp_active' 'feedme' %}" data-section="edit">Feedme</a>
                         </li>
-
-                        <li>
-                            <a href="">Fravaer</a>
+                        <li class="{% ifequal 'fravaer' active_tab %}active{% endifequal %}">
+                            <a href="{% url 'meetapp_active' 'fravaer' %}" data-section="saldo">Fravær</a>
                         </li>
                     </ul>
+                </div>
+                <div class="col-md-10 col-sm-9 col-xs-12">
+                    <div id="tab-content">
+                        <section id="agenda">
+                            {% include "meetapp/agenda.html" %}
+                        </section>
+                        <section id="edit">
+                            {% include "meetapp/feedme.html" %}
+                        </section>
+                        <section id="saldo">
+                            {% include "meetapp/fravaer.html" %}
+                        </section>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-
 {% endblock content %}
 
+{% block js %}
+    {{ block.super }}
+    {% render_bundle 'meetapp' 'js' %}
+{% endblock %}
