@@ -3,7 +3,7 @@ resources:
   type: git
   source:
     uri: "https://github.com/dotKom/onlineweb4"
-    branch: develop
+    branch: "feature/concourse-ci"
 
 jobs:
 - name: onlineweb4-unit
