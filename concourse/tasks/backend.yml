@@ -17,9 +17,11 @@ inputs:
 run:
 - path: sh
   args:
-  - whoami
-  - ls -l
-  - pip install -r requirements.txt -r requirements-testing.txt --quiet
-  - isort -rc -c apps middleware scripts utils
-  - flake8 apps middleware scripts utils
-  - py.test --cov=apps
+  - -exc
+  - |
+    whoami
+    ls -l
+    pip install -r requirements.txt -r requirements-testing.txt --quiet
+    isort -rc -c apps middleware scripts utils
+    flake8 apps middleware scripts utils
+    py.test --cov=apps

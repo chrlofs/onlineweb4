@@ -17,6 +17,8 @@ outputs:
 run:
 - path: sh
   args:
-  - whoami
-  - ls -l
-  - npm install --depth=0 --quiet
+  - -exc
+  - |
+    whoami
+    ls -l
+    npm install --depth=0 --quiet
