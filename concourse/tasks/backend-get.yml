@@ -1,0 +1,27 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: registry.online.ntnu.no/dotkom/onlineweb4-testbase
+    username: {{docker-registry-username}}
+    password: {{docker-registry-password}}
+    email: {{docker-registry-email}}
+
+inputs:
+- name: onlineweb4
+- name: webpack
+  path: bundles
+
+run:
+  path: sh
+  dir: onlineweb4
+  args:
+  - -exc
+  - |
+    whoami
+    ls -l
+    pip install -r requirements.txt -r requirements-testing.txt --quiet
+    isort -rc -c apps middleware scripts utils
+    flake8 apps middleware scripts utils

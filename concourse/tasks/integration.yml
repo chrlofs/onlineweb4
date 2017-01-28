@@ -9,10 +9,12 @@ image_resource:
     password: {{docker-registry-password}}
     email: {{docker-registry-email}}
 
-inputs:
-- name: onlineweb4
-- name: webpack
-  path: bundles
+- inputs:
+  - name: onlineweb4
+  - name: node_modules
+    path: onlineweb4/node_modules
+  - name: webpack
+    path: onlineweb4/bundles
 
 run:
   path: sh
@@ -22,7 +24,7 @@ run:
   - |
     whoami
     ls -l
-    pip install -r requirements.txt -r requirements-testing.txt --quiet
-    isort -rc -c apps middleware scripts utils
-    flake8 apps middleware scripts utils
+    python webpack_resolve.py
+    npm run lint
+    npm run build:prod
     py.test --cov=apps
