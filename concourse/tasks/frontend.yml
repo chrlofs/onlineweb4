@@ -23,3 +23,5 @@ run:
     whoami
     ls -l
     npm install --depth=0 --quiet
+    npm run lint
+    npm run build:prod
