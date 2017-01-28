@@ -1,0 +1,22 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: node
+    tag: "6-slim"
+
+inputs:
+- name: onlineweb4
+
+outputs:
+- name: webpack
+  path: bundles
+
+run:
+- path: sh
+  args:
+  - whoami
+  - ls -l
+  - npm install --depth=0 --quiet

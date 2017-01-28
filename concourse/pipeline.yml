@@ -1,0 +1,17 @@
+resources:
+- name: onlineweb4
+  type: git
+  source:
+    uri: "https://github.com/dotKom/onlineweb4"
+    branch: develop
+
+jobs:
+- name: onlineweb4-unit
+  build_logs_to_retain: 10
+  plan:
+  - get: onlineweb4
+    trigger: true
+  - task: frontend
+    file: onlineweb4/concourse/tasks/frontend.yml
+  - task: backend
+    file: onlineweb4/concourse/tasks/backend.yml
