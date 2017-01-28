@@ -15,7 +15,8 @@ outputs:
   path: bundles
 
 run:
-- path: sh
+  path: sh
+  dir: onlineweb4
   args:
   - -exc
   - |
