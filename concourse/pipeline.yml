@@ -9,9 +9,9 @@ jobs:
 - name: onlineweb4-unit
   build_logs_to_retain: 10
   plan:
+  - get: onlineweb4
+    trigger: true
   - aggregate:
-    - get: onlineweb4
-      trigger: true
     - task: frontend-get
       file: onlineweb4/concourse/tasks/frontend-get.yml
     - task: backend-get
