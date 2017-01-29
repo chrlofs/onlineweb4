@@ -4,10 +4,8 @@ platform: linux
 image_resource:
   type: docker-image
   source:
-    repository: "registry.online.ntnu.no/dotkom/onlineweb4-testbase"
-    username: "{{docker_registry_username}}"
-    password: "{{docker_registry_password}}"
-    email: "{{docker_registry_email}}"
+    repository: python
+    tag: "3"
 
 inputs:
 - name: onlineweb4
@@ -21,7 +19,10 @@ run:
   - -exc
   - |
     whoami
+    env
     ls -l
+    apt-get update
+    apt-get install --no-install-recommends -y ghostscript libjpeg-dev
     pip install -r requirements.txt -r requirements-testing.txt --quiet
     isort -rc -c apps middleware scripts utils
     flake8 apps middleware scripts utils
