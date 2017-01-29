@@ -4,6 +4,14 @@ resources:
   source:
     uri: "https://github.com/dotKom/onlineweb4"
     branch: "feature/concourse-ci"
+- name: onlineweb4-backend
+  type: docker-image
+  source:
+    repository: registry.online.ntnu.no/dotkom/onlineweb4-testbase
+    username: "{{docker_registry_username}}"
+    password: "{{docker_registry_password}}"
+    email: "{{docker_registry_email}}"
+- name: 
 
 jobs:
 - name: onlineweb4-unit
