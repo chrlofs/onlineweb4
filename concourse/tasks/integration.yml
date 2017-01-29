@@ -7,12 +7,12 @@ image_resource:
     repository: python
     tag: "3"
 
-- inputs:
-  - name: onlineweb4
-  - name: node_modules
-    path: onlineweb4/node_modules
-  - name: webpack
-    path: onlineweb4/bundles
+inputs:
+- name: onlineweb4
+- name: node_modules
+  path: onlineweb4/node_modules
+- name: webpack
+  path: onlineweb4/bundles
 
 run:
   path: sh
