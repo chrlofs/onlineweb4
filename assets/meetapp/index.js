@@ -1,7 +1,14 @@
 import $ from 'jquery';
 import { ajaxEnableCSRF, setStatusMessage } from 'common/utils/';
+import 'common/datetimepicker';
+import 'font-awesome/css/font-awesome.css';
 
 ajaxEnableCSRF($);
+
+$('.dtp').datetimepicker({
+    locale: 'nb',
+    format: 'YYYY-MM-DD HH:mm:ss',
+});
 
 $(document).ready(() => {
   // Generic javascript to enable interactive tabs that do not require page reload
