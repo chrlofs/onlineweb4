@@ -1,17 +1,15 @@
-import React, { Component } from 'react';
+import React, { PropTypes } from 'react';
 import Offline from '../components/Offline';
 
-
-const apiOfflineToOffline = offline => ({
+const apiOfflinesToOfflines = offline => ({
   offlineUrl: offline.issue,
-  thumbnail: offline.get_absolute_thumbnail_url,
+  thumb: `${offline.issue}.thumb.png`,
 });
 
-
-class OfflineContainer extends Component {
+class OfflineContainer extends React.Component {
   constructor(props) {
     super(props);
-    this.API_URL = '/api/v1/offline/?format=json';
+    this.API_URL = '/api/v1/articles?format=json';
     this.state = {
       offlines: [],
     };
@@ -19,12 +17,12 @@ class OfflineContainer extends Component {
   }
 
   fetchOfflines() {
-    const apiUrl = this.API_URL;
-    fetch(apiUrl, { credentials: 'same-origin' })
+    const apiURL = this.API_URL;
+    fetch(apiURL, { credentials: 'same-origin' })
     .then(response => response.json())
     .then((json) => {
       this.setState({
-        offlines: json.results.map(apiOfflineToOffline),
+        offlines: json.results.map(apiOfflinesToOfflines),
       });
     });
   }

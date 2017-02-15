@@ -1,12 +1,12 @@
-import React, {PropTypes} from 'react';
+import React, { PropTypes } from 'react';
 
-const OfflineBlurb = ({ingress, p1, p2, p3, orderLinkText, orderLink}) => (
+const OfflineBlurb = ({ ingress, p1, p2, p3, orderLinkText, orderLink }) => (
   <div>
     <div className="ingress">
       <p>{ ingress }</p>
     </div>
     <p>{ p1 }</p>
-    <p>{ p2 }<a href="{ orderLinkText }">{ orderLink }</a></p>
+    <p>{ p2 }<a href={orderLink}>{ orderLinkText }</a></p>
     <p>{ p3 }</p>
   </div>
 );

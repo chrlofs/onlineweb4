@@ -1,10 +1,11 @@
 import React, { PropTypes } from 'react';
 import Heading from 'common/Heading';
 import OfflineBlurb from './OfflineBlurb';
+import OfflineCarousel from './OfflineCarousel';
 
 const Offline = ({ offlines }) => (
   <div>
-    <Heading name={"OFFLINE"} />
+    <Heading name={'OFFLINE'} />
     <div className="row">
       {
         <OfflineBlurb
@@ -17,6 +18,7 @@ const Offline = ({ offlines }) => (
         />
       }
     </div>
+    <OfflineCarousel offlines={offlines} />
   </div>
 );
 
