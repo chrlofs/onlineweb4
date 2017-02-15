@@ -17,6 +17,9 @@ class ItemCategory(models.Model):
 
     class Meta(object):
         default_permissions = ('add', 'change', 'delete', 'view')
+        permissions = (
+            ("view_itemCategory", "View Inventory Item Category"),
+        )
 
 
 class Item(models.Model):
