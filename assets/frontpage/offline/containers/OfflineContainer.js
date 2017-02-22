@@ -36,4 +36,8 @@ class OfflineContainer extends React.Component {
   }
 }
 
+OfflineContainer.propTypes = {
+  offlines: Offline.propTypes.offlines,
+};
+
 export default OfflineContainer;

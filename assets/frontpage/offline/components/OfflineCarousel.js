@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react';
+import OfflineIssue from './OfflineIssue';
 
 class OfflineCarousel extends React.Component {
   constructor(props) {
@@ -11,8 +12,11 @@ class OfflineCarousel extends React.Component {
   }
 
   setOfflinesToRender() {
+    if (!this.props.offlines || !this.props.offlines.length) {
+      return;
+    }
     this.setState({
-      offlinesToRender: this.state.articles.slice(this.state.carouselPageIndex, this.state.carouselPageIndex + 3),
+      offlinesToRender: this.props.offlines.slice(this.state.carouselPageIndex, this.state.carouselPageIndex + 3),
     });
   }
 
@@ -38,8 +42,17 @@ class OfflineCarousel extends React.Component {
 
   render() {
     return (
-      <button type="button" onClick={() => this.button(true)} />
-      <button type="button" onClick={() => this.button(false)} />
-    )
+      <div>
+        <button type="button" onClick={() => this.button(true)} />
+        <OfflineIssue offlines={this.offlines} />
+        <button type="button" onClick={() => this.button(false)} />
+      </div>
+    );
   }
 }
+
+OfflineCarousel.propTypes = {
+  offlines: PropTypes.arrayOf(PropTypes.shape(OfflineIssue.propTypes)),
+};
+
+export default OfflineCarousel;

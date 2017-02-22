@@ -114,12 +114,6 @@ module.exports = {
     wiki: [
       './assets/wiki/index',
     ],
-    frontpageArticles: [
-      './assets/js/frontpage/articles/index'
-    ],
-    frontpageOfflines: [
-      './assets/js/frontpage/offline/index'
-    ],
   },
   // Webpack's resolve magic https://webpack.github.io/docs/resolving.html
   resolve: {

@@ -1,11 +1,11 @@
 import React, { PropTypes } from 'react';
-import Heading from 'common/Heading';
 import OfflineBlurb from './OfflineBlurb';
 import OfflineCarousel from './OfflineCarousel';
+import Heading from '../../common/Heading'
 
 const Offline = ({ offlines }) => (
   <div>
-    <Heading name={'OFFLINE'} />
+    <Heading />
     <div className="row">
       {
         <OfflineBlurb
@@ -23,7 +23,7 @@ const Offline = ({ offlines }) => (
 );
 
 Offline.propTypes = {
-  offlines: PropTypes.arrayOf(PropTypes.shape(Offline.propTypes)),
+  offlines: OfflineCarousel.propTypes.offlines,
 };
 
 
