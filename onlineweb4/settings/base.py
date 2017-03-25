@@ -384,6 +384,7 @@ IMPORT_DDF_MODELS = False
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',  # Allows users to be logged in to browsable API
+        'oauth2_provider.ext.rest_framework.OAuth2Authentication',
     ),
     'DEFAULT_FILTER_BACKENDS': (
         'rest_framework.filters.DjangoFilterBackend',
