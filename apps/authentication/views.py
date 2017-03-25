@@ -21,7 +21,7 @@ from rest_framework.permissions import AllowAny
 from apps.authentication.forms import ChangePasswordForm, LoginForm, RecoveryForm, RegisterForm
 from apps.authentication.models import OnlineUser as User
 from apps.authentication.models import Email, RegisterToken
-from apps.authentication.serializers import UserSerializer
+from apps.authentication.serializers import PublicUserSerializer
 
 
 @sensitive_post_parameters()
@@ -266,10 +266,10 @@ def set_password(request, token=None):
 
 class UserViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.ListModelMixin):
     """
-    Viewset for User serializer. Supports filtering on 'first_name', 'last_name', 'email'
+    Viewset for public User serializer. Supports filtering on 'first_name', 'last_name', 'email'
     """
 
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = PublicUserSerializer
     permission_classes = (AllowAny,)
     filter_fields = ('first_name', 'last_name', 'rfid',)

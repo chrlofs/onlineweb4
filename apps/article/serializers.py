@@ -2,12 +2,12 @@ from rest_framework import serializers
 from taggit_serializer.serializers import TaggitSerializer, TagListSerializerField
 
 from apps.article.models import Article
-from apps.authentication.serializers import UserSerializer
+from apps.authentication.serializers import PublicUserSerializer
 from apps.gallery.serializers import ResponsiveImageSerializer
 
 
 class ArticleSerializer(TaggitSerializer, serializers.ModelSerializer):
-    created_by = UserSerializer()
+    created_by = PublicUserSerializer()
     image = ResponsiveImageSerializer()
     tags = TagListSerializerField()
     absolute_url = serializers.CharField(source='get_absolute_url', read_only=True)
