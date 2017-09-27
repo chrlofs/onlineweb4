@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load render_bundle from webpack_loader %}
+
+{% block title %}
+MeetApp
+{% endblock title %}
+
+{% block styles %}
+	{{ block.super }}
+	{% render_bundle 'meetapp' 'css' %}
+{% endblock %}
+
+{% block js %}
+	{{ block.super }}
+	{% render_bundle 'meetapp' 'js' %}
+{% endblock %}
+
+{% block content %}
+
+<div id="meetapp_container">
+    <div id="meetapp">Loading...</div>
+</div>
+
+{% endblock content %}

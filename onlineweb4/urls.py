@@ -134,6 +134,11 @@ if 'apps.marks' in settings.INSTALLED_APPS:
         url(r'^dashboard/marks/',          include('apps.marks.dashboard.urls')),
     ]
 
+if 'apps.meetapp' in settings.INSTALLED_APPS:
+    urlpatterns += [
+        url(r'^meetapp/', include('apps.meetapp.urls')),
+    ]
+
 if 'apps.inventory' in settings.INSTALLED_APPS:
     urlpatterns += [
         url(r'^dashboard/inventory/',          include('apps.inventory.dashboard.urls')),

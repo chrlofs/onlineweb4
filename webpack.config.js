@@ -87,6 +87,9 @@ const webpackConfig = {
     mailinglists: [
       './assets/mailinglists/index',
     ],
+    meetapp: [
+      './assets/meetapp/index',
+    ],
     offline: [
       './assets/offline/index',
     ],
