@@ -48,9 +48,7 @@
         margin: 0;
         padding: 0;
     }
-.mn-nav {
-    -webkit-transform: translate3d(0,0,0);
-}
+
 .mn-nav li {
     line-height: @navbar-height;
     display: inline-block;
@@ -66,7 +64,7 @@
         background: rgba(255, 255, 255, .1);
     }
     .mn-nav li.active {
-        border-top: 5px solid rgba(255, 255, 255, 1);
+        border-color: rgba(255, 255, 255, 1);
     }
     .mn-nav li:hover a {
         text-decoration: none;
@@ -91,14 +89,9 @@
         background: none;
     }
 
-svg, rect {
-    -webkit-transition: all 0.3s;
-       -moz-transition: all 0.3s;
-            transition: all 0.3s;
-
-    -webkit-transition-timing-function: ease-in-out;
-       -moz-transition-timing-function: ease-in-out;
-            transition-timing-function: ease-in-out;
+.mn-svg, rect {
+    transition: all 0.3s;
+    transition-timing-function: ease-in-out;
 }
 .mn-svg {
     position: absolute;
@@ -114,31 +107,21 @@ rect {
 }
 
     .mn-svg-rect-top {
-        -webkit-transform: translate3d(0, -8px, 0);
-           -moz-transform: translate3d(0, -8px, 0);
-                transform: translate3d(0, -8px, 0);
+        transform: translateY(-8px);
     }
     .mn-svg-rect-bottom {
-        -webkit-transform: translate3d(0, 8px, 0);
-           -moz-transform: translate3d(0, 8px, 0);
-                transform: translate3d(0, 8px, 0);
+        transform: translateY(8px);
     }
 
 .transform-button {
-    -webkit-transform: translate3d(0, 0, 0);
-       -moz-transform: translate3d(0, 0, 0);
-            transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
 }
 
 .rotate-button {
-    -webkit-transform: rotate3d(0, 0, 1, 135deg);
-       -moz-transform: rotate3d(0, 0, 1, 135deg);
-            transform: rotate3d(0, 0, 1, 135deg);
+    transform: rotate3d(0, 0, 1, 135deg);
 }
 .rotate-button-ccw {
-    -webkit-transform: rotate3d(0, 0, 1, -135deg);
-       -moz-transform: rotate3d(0, 0, 1, -135deg);
-            transform: rotate3d(0, 0, 1, -135deg);
+    transform: rotate3d(0, 0, 1, -135deg);
 }
 
 #main-sponsor {
@@ -298,8 +281,7 @@ rect {
 
 @media (max-width: 767px) {
     #mainnav .dropdown-menu {
-        -webkit-transform: translateX(-50%);
-                transform: translateX(-50%);
+        transform: translateX(-50%);
     }
     #mainnav ul.mn-nav {
         display: block;
@@ -377,7 +359,6 @@ rect {
     .subnavbar ul {
         white-space: nowrap;
         overflow: scroll;
-        -webkit-overflow-scrolling: touch;
     }
         .subnavbar ul li a:hover,
         .subnavbar ul li a.active {
