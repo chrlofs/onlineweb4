@@ -105,7 +105,14 @@ svg, rect {
     top: 0;
     left: 0;
     fill: #fff;
+    width: 100%;
 }
+
+rect {
+    width: 32px;
+    height: 4px;
+}
+
     .mn-svg-rect-top {
         -webkit-transform: translate3d(0, -8px, 0);
            -moz-transform: translate3d(0, -8px, 0);
@@ -166,18 +173,24 @@ svg, rect {
     top: 0;
     left: 0;
 }
-    .mn-collapse button {
-        position: relative;
-        height: @navbar-height;
-        width: @navbar-height;
-        background: none;
-        border: none;
-        margin-top: -2px;
-    }
+
     .mn-collapse li {
         display: inline-block;
         vertical-align: middle;
     }
+
+#mn-hamburger {
+    position: relative;
+    height: @navbar-height;
+    width: @navbar-height;
+    background: none;
+    border: none;
+    margin-top: -2px;
+
+    &:focus {
+        outline: none;
+    }
+}
 
 .mn-user-nav {
     position: absolute;

@@ -22,7 +22,7 @@ const removeAnimation = () => {
 export default () => {
   /* nav bar toggle
   ---------------------------------------------------------------------------*/
-  $('#mainnav-button').click(() => {
+  $('#mn-hamburger').click(() => {
     if ($('.mn-nav').first().hasClass('mn-nav-open')) {
       removeAnimation();
       $('.mn-nav').removeClass('mn-nav-open').addClass('animation-in-process');
